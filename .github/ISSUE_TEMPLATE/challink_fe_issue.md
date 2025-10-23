@@ -1,6 +1,6 @@
 ---
-name: Likelion13-line4-Challink FE Issue Template
-about: 멋쟁이사자처럼 4호선톤 13팀 FE 이슈 템플릿
+name: Challink_FE_Issue
+about: Chanllink FE 이슈 템플릿
 title: "[Tag] Issue Message"
 labels: ''
 assignees: ''
