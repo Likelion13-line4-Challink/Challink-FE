@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate', // 새 버전 생기면 자동 업데이트
+      devOptions: {
+        enabled: false, // 개발 중에는 SW 비활성화
+      },
       includeAssets: [
         'favicons/favicon.ico',
         'favicons/apple-touch-icon.png',
@@ -40,19 +43,19 @@ export default defineConfig({
   preview: { port: 5137 },
   build: { outDir: 'dist' },
   resolve: {
-    alias: [
-      { find: '@', replacement: '/src' },
-      { find: '@components', replacement: '/src/components' },
-      { find: '@pages', replacement: '/src/pages' },
-      { find: '@hooks', replacement: '/src/hooks' },
-      { find: '@apis', replacement: '/src/apis' },
-      { find: '@routes', replacement: '/src/routes' },
-      { find: '@styles', replacement: '/src/styles' },
-      { find: '@utils', replacement: '/src/utils' },
-      { find: '@types', replacement: '/src/types' },
-      { find: '@mocks', replacement: '/src/mocks' },
-      { find: '@assets', replacement: '/src/assets' },
-      { find: '@store', replacement: '/src/store' },
-    ],
+    alias: {
+      '@': '/src',
+      '@components': '/src/components',
+      '@pages': '/src/pages',
+      '@hooks': '/src/hooks',
+      '@apis': '/src/apis',
+      '@routes': '/src/routes',
+      '@styles': '/src/styles',
+      '@utils': '/src/utils',
+      '@types': '/src/types',
+      '@mocks': '/src/mocks',
+      '@assets': '/src/assets',
+      '@store': '/src/store',
+    },
   },
 });
