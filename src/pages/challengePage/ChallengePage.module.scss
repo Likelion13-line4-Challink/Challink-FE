@@ -1,0 +1,14 @@
+@use '../../styles/mixins' as m;
+@use '../../styles/variables' as *;
+
+.challengePageContainer {
+  @include m.flex-column-center(flex-start, center, 24px);
+  padding-top: 64px;
+}
+
+.challengeBody {
+  @include m.flex-column-center(flex-start, center, 6px);
+  width: 100%;
+  background-color: $main-color2;
+  border-radius: 12px 12px 0 0;
+}

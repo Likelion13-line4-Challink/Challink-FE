@@ -1,11 +1,6 @@
 @use '../../../../styles/mixins' as m;
 @use '../../../../styles/variables' as *;
 
-.ongoingChallengContainer {
-  @include m.flex-column-center(flex-start, center, 24px);
-  padding-top: 64px;
-}
-
 .todayChallenge {
   @include m.flex-column-center(flex-start, center, 6px);
   width: 100%;
