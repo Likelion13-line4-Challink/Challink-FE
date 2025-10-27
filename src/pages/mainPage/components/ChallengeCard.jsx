@@ -17,7 +17,7 @@ const ChallengeCard = () => {
             <ul className={s.metaList}>
               <li>{c.duration_weeks}주 동안</li>
               <li>{c.freq_type}</li>
-              <li>{c.entry_fee}p</li>
+              <li>{c.entry_fee.toLocaleString()}p</li>
               <li>{c.category}</li>
               <li>{c.member_count}명</li>
             </ul>
