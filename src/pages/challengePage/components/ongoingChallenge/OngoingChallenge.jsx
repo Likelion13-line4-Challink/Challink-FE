@@ -5,12 +5,12 @@ import GradientBox from '../../../../components/GradientBox';
 import GradientButton from '../../../../components/GradientButton';
 import FIRE from '@assets/images/icons/fire_icon.svg';
 import DUPLICATE from '@assets/images/icons/duplicate_icon.svg';
-import BACK from '@assets/images/icons/back_icon.svg';
 import BOOK from '@assets/images/book_ex.jpg';
 import NOPHOTO from '@assets/images/no_photo.png';
 
 import IconButton from '../../../../components/IconButton';
 import TodayPhotoBox from './TodayPhotoBox';
+import ChallengeTitle from '../ChallengeTitle';
 
 const todayPhotos = [
   { src: BOOK, name: '김한성' },
@@ -24,16 +24,9 @@ const todayPhotos = [
 const OngoingChallenge = () => {
   return (
     <div className={s.ongoingChallengContainer}>
-      <div className={s.ongoingTitle}>
-        <IconButton src={BACK} alt="뒤로가기" width="16px" />
-        <p>📚 매일매일 독서</p>
-      </div>
-
-      <GradientBox
-        width="349px"
-        height="40px"
-        text="50,000p 걸고 1주 동안 매일 인증하기!"
-        borderRadius="4px"
+      <ChallengeTitle
+        title={`📚 매일매일 독서 챌린지`}
+        subTitle={`50,000p 걸고 1주 동안 매일 인증하기!`}
       />
 
       <div className={s.todayChallenge}>

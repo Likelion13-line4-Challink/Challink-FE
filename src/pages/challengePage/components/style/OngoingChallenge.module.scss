@@ -6,15 +6,6 @@
   padding-top: 64px;
 }
 
-.ongoingTitle {
-  width: 346px;
-  @include m.flex-row-center(flex-start, center, 6px);
-
-  p {
-    @include m.font-size-weight(20px, 600);
-  }
-}
-
 .todayChallenge {
   @include m.flex-column-center(flex-start, center, 6px);
   width: 100%;
