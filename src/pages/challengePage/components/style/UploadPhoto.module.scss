@@ -18,6 +18,13 @@
   }
 }
 
+.uploadedPhoto {
+  width: 100%;
+  border-radius: 8px;
+  height: 100%;
+  object-fit: cover;
+}
+
 .noUpload {
   @include m.flex-column-center(center, center, 50px);
   margin-top: 30px;
