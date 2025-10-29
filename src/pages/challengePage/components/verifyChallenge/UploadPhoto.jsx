@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import s from '../style/UploadPhoto.module.scss';
 import GradientButton from '../../../../components/GradientButton';
 import CHAR from '@assets/images/character.png';
+import Bubble from './Bubble';
 
 const UploadPhoto = () => {
   const [photo, setPhoto] = useState(null); // 업로드 사진
@@ -28,9 +29,12 @@ const UploadPhoto = () => {
         ) : (
           // 사진 안올린 경우
           <div className={s.noUpload}>
-            <div className={s.bubble}>
-              <p>혹시… 오늘 인증 깜빡하신 건 아니죠?</p>
-            </div>
+            <Bubble
+              width="207px"
+              height="80.7px"
+              text={`혹시… 오늘 인증 깜빡하신 건\n아니죠?`}
+              fontSize="14px"
+            />
             <img src={CHAR} alt="캐릭터" width="83px" />
           </div>
         )}
