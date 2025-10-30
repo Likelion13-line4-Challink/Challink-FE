@@ -1,0 +1,31 @@
+@use '../../../../styles/mixins' as m;
+@use '../../../../styles/variables' as *;
+
+.photoDetailContainer {
+  @include m.flex-column-center(start, center, 13px);
+
+  width: 343px;
+  height: 511px;
+  background-color: $main-color1;
+  border-radius: 12px;
+  box-shadow: 8px 8px 18px 0px rgba(67, 0, 209, 0.05);
+}
+
+.photoInfo {
+  width: 319px;
+  height: 29px;
+  @include m.flex-row-center(space-between, center);
+  margin-top: 12px;
+}
+.tags {
+  @include m.flex-row-center(center, center, 12px);
+
+  .tag {
+    @include m.font-size-weight(12px, 600);
+    background-color: $gray-white;
+    border-radius: 4px;
+    display: inline;
+    padding: 6px 15px;
+    text-align: center;
+  }
+}
