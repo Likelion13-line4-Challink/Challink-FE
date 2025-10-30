@@ -2,14 +2,17 @@
 @use '../../styles/variables' as *;
 
 .gradientButton {
-  @include m.primary-gradient;
+  background: transparent;
   @include m.button-click(1);
-  padding: 1px;
-  border: 0;
+
+  border: 1px solid $gradient-start-color;
   border-radius: 20000px;
   cursor: pointer;
+  transition: all 300ms ease;
 
   &:hover {
+    @include m.primary-gradient;
+    border-color: transparent;
     box-shadow: 0px 0px 18px 0px rgba(255, 61, 61, 0.35);
 
     .innerSpan {
@@ -28,7 +31,7 @@
 
 .innerSpan {
   @include m.flex-row-center;
-  background-color: $main-color2;
+  background: transparent;
   width: 100%;
   height: 100%;
   border-radius: inherit;
@@ -37,5 +40,6 @@
   .innderText {
     @include m.primary-gradient-text;
     @include m.font-size-weight(20px, 600);
+    transition: all 300ms ease;
   }
 }

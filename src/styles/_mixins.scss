@@ -1,15 +1,5 @@
 @use './variables' as *;
 
-$gradient-start-color: #ff3f3e;
-$gradient-end-color: #f68484;
-
-// 기본 그라데이션
-$primary-gradient: linear-gradient(
-  70deg,
-  $gradient-start-color 46%,
-  $gradient-end-color 100%
-);
-
 // 그라데이션 박스
 @mixin primary-gradient {
   background-image: $primary-gradient;
