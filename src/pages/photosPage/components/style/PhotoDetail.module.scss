@@ -54,3 +54,8 @@
   cursor: crosshair; // + 커서
   z-index: 10;
 }
+
+.commentInfo {
+  @include m.font-size-weight(12px, 400);
+  color: $gray-white;
+}

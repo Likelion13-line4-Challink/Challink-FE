@@ -50,6 +50,8 @@ const PhotoDetail = ({ onClose }) => {
         <div ref={containerRef} className={s.commentOverlay} onClick={handleClick} />
       </div>
 
+      <p className={s.commentInfo}>사진을 클릭해 댓글을 남겨보세요!</p>
+
       {/* 댓글과 입력창 */}
       {comments.map((comment, index) => {
         const styleProps = calculateStyleProps(comment, 'item');
