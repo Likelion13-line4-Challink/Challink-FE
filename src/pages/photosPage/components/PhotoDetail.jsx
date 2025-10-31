@@ -34,40 +34,42 @@ const PhotoDetail = ({ onClose }) => {
   }
 
   return (
-    <div className={s.photoDetailContainer}>
-      {/* 이름, 날짜, x버튼 */}
-      <div className={s.photoInfo}>
-        <div className={s.tags}>
-          <p className={s.tag}>김한성</p>
-          <p className={s.tag}>2025.10.02.</p>
+    <div className={s.overlay}>
+      <div className={s.photoDetailContainer}>
+        {/* 이름, 날짜, x버튼 */}
+        <div className={s.photoInfo}>
+          <div className={s.tags}>
+            <p className={s.tag}>김한성</p>
+            <p className={s.tag}>2025.10.02.</p>
+          </div>
+          <IconButton src={CANCLE} alt="취소" width="20px" onClick={onClose} />
         </div>
-        <IconButton src={CANCLE} alt="취소" width="20px" onClick={onClose} />
+
+        {/* 댓글 클릭 영역 */}
+        <div className={s.photoWrapper}>
+          <img src={EX} alt="사진" width="100%" height="408px" />
+          <div ref={containerRef} className={s.commentOverlay} onClick={handleClick} />
+        </div>
+
+        <p className={s.commentInfo}>사진을 클릭해 댓글을 남겨보세요!</p>
+
+        {/* 댓글과 입력창 */}
+        {comments.map((comment, index) => {
+          const styleProps = calculateStyleProps(comment, 'item');
+          if (styleProps) {
+            styleProps.zIndex = 9999;
+          }
+          return <CommentItem key={index} text={comment.text} styleProps={styleProps} />;
+        })}
+        {clickedPos && (
+          <CommentInput
+            styleProps={newCommentStyleProps}
+            value={newComment}
+            onChange={setNewComment}
+            onSubmit={handleSubmit}
+          />
+        )}
       </div>
-
-      {/* 댓글 클릭 영역 */}
-      <div className={s.photoWrapper}>
-        <img src={EX} alt="사진" width="100%" height="408px" />
-        <div ref={containerRef} className={s.commentOverlay} onClick={handleClick} />
-      </div>
-
-      <p className={s.commentInfo}>사진을 클릭해 댓글을 남겨보세요!</p>
-
-      {/* 댓글과 입력창 */}
-      {comments.map((comment, index) => {
-        const styleProps = calculateStyleProps(comment, 'item');
-        if (styleProps) {
-          styleProps.zIndex = 9999;
-        }
-        return <CommentItem key={index} text={comment.text} styleProps={styleProps} />;
-      })}
-      {clickedPos && (
-        <CommentInput
-          styleProps={newCommentStyleProps}
-          value={newComment}
-          onChange={setNewComment}
-          onSubmit={handleSubmit}
-        />
-      )}
     </div>
   );
 };

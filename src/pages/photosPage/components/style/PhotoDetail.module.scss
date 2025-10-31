@@ -1,9 +1,20 @@
 @use '../../../../styles/mixins' as m;
 @use '../../../../styles/variables' as *;
 
+.overlay {
+  @include m.flex-row-center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00020d33;
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+
 .photoDetailContainer {
   @include m.flex-column-center(start, center, 13px);
-
   width: 343px;
   height: 511px;
   background-color: $main-color1;
