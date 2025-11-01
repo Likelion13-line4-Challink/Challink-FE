@@ -1,0 +1,21 @@
+@use '../../../../styles/mixins' as m;
+@use '../../../../styles/variables' as *;
+
+.aiLodingContainer {
+  @include m.flex-column-center(center, center, 35px);
+  width: 183px;
+  height: 220px;
+  border-radius: 8px;
+  box-shadow:
+    inset 2px 2px 2px -2px #ffffff,
+    inset -2px -2px 3px -2px #ffffff,
+    0 4px 12px 0 #0400fa0f,
+    0px 0px 8px 0 #4300d10d,
+    0px 0px 20px 0 #ff000040;
+
+  backdrop-filter: blur(5px);
+
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
+    linear-gradient(rgba(203, 250, 255, 0.1), rgba(203, 250, 255, 0.1));
+}

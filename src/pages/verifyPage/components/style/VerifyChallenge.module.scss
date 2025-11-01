@@ -1,0 +1,31 @@
+@use '../../../../styles/mixins' as m;
+@use '../../../../styles/variables' as *;
+
+.verifyChallenge {
+  @include m.flex-column-center(flex-start, center, 8px);
+  padding-top: 24px;
+
+  .challengePeriod {
+    width: 239px;
+    @include m.font-size-weight(10px, 500);
+    color: $gray-300;
+    margin-top: 28px;
+  }
+
+  .verifyCondition {
+    width: 330px;
+    @include m.flex-row-center(center, center, 5px);
+    margin-top: 15px;
+
+    p,
+    input.conditionInput {
+      @include m.font-size-weight(16px);
+      color: $gray-white;
+      text-align: center;
+      margin: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+  }
+}

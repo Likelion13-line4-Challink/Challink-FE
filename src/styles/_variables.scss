@@ -10,6 +10,8 @@ $translucent: #ffffff80;
 $main-color1: #ff3e3d;
 $main-color2: #1d1c42;
 
+$gray-white: #fcfcfc;
+
 $gray-100: #e9e9e9;
 $gray-200: #d9d9d9;
 $gray-300: #c4c4c4;
@@ -18,6 +20,12 @@ $gray-500: #767676;
 $gray-600: #555555;
 $gray-700: #505050;
 $gray-800: #262626;
+
+$gradient-start-color: #ff3f3e;
+$gradient-end-color: #f68484;
+
+// 기본 그라데이션
+$primary-gradient: linear-gradient(70deg, $gradient-start-color 46%, $gradient-end-color 100%);
 
 // 자주 쓰는 색 있으면 추가
 
