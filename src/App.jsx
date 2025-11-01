@@ -11,6 +11,7 @@ import ChallengeLayout from './pages/challengeLayout/ChallengeLayout';
 import OngoingPage from './pages/ongoingPage/OngoingPage';
 import VerifyPage from './pages/verifyPage/VerifyPage';
 import PhotosPage from './pages/photosPage/PhotosPage';
+import ResultPage from './pages/resultPage/ResultPage';
 
 /*
     LoginPage: 로그인 페이지
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
           { index: true, element: <OngoingPage /> },
           { path: 'verify', element: <VerifyPage /> },
           { path: 'photos', element: <PhotosPage /> },
+          { path: 'result', element: <ResultPage /> },
         ],
       },
 
