@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import s from './AllChallenge.module.scss';
+import s from './styles/AllChallenge.module.scss';
 import dummyData from '../datas/AllChallengeDummy.json';
 import img22 from '../datas/22.png';
 import chevron from '../../../assets/images/chevron_right_icon.svg';
