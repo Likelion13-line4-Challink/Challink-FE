@@ -1,0 +1,72 @@
+@use '../../../../styles/mixins' as m;
+@use '../../../../styles/variables' as *;
+
+.overlay {
+  @include m.flex-row-center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00020d33;
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+
+.photoDetailContainer {
+  @include m.flex-column-center(start, center, 13px);
+  width: 343px;
+  height: 511px;
+  background-color: $main-color1;
+  border-radius: 12px;
+  box-shadow: 8px 8px 18px 0px rgba(67, 0, 209, 0.05);
+}
+
+.photoInfo {
+  width: 319px;
+  height: 29px;
+  @include m.flex-row-center(space-between, center);
+  margin-top: 12px;
+}
+.tags {
+  @include m.flex-row-center(center, center, 12px);
+
+  .tag {
+    @include m.font-size-weight(12px, 600);
+    background-color: $gray-white;
+    border-radius: 4px;
+    display: inline;
+    padding: 6px 15px;
+    text-align: center;
+    box-shadow: 8px 8px 8px 0px rgba(67, 0, 209, 0.06);
+  }
+}
+
+.photoWrapper {
+  position: relative;
+  width: 100%;
+  height: 408px;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// 클릭을 감지할 투명 오버레이
+.commentOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair; // + 커서
+  z-index: 10;
+}
+
+.commentInfo {
+  @include m.font-size-weight(12px, 400);
+  color: $gray-white;
+}
