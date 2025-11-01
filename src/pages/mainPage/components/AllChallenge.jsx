@@ -26,7 +26,7 @@ const AllChallenge = () => {
 
       {/* 챌린지 리스트 */}
       <div className={s.challengeList}>
-        {dummyData.results.map((c) => (
+        {dummyData.items.map((c) => (
           <article key={c.id} className={s.challengeItem}>
             <img src={img22} className={s.coverImage} />
             <div className={s.contentBox}>
