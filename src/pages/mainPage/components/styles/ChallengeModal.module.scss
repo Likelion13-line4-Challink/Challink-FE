@@ -79,31 +79,3 @@
     }
   }
 }
-// <section className={s.challengeModalContainer}>
-// {/* 챌린지 제목 */}
-// <h2 className={s.challengeTitle}>{c.title}</h2>
-
-// {/* 유저 정보 */}
-// <div className={s.userInfo}>
-//   <p className={s.userName}>{c.userName}님의 챌린지</p>
-// </div>
-
-// {/* 챌린지 상세 정보 카드 */}
-// <div className={s.challengeInfoCard}>
-//   <h3 className={s.challengeInfo}>
-//     {c.entry_fee.toLocaleString()}p 걸고 {c.duration_weeks}주 동안 매일
-//     인증하기!
-//   </h3>
-
-//   <div className={s.meta}>
-//     <p className={s.description}>{c.description}</p>
-//     <p className={s.aiCondition}>{c.ai_condition}</p>
-//   </div>
-
-//   <p className={s.category}>{c.category.name}</p>
-//   <p className={s.duration}>
-//     {c.start_date.replaceAll('-', '.')} ~{' '}
-//     {c.end_date.replaceAll('-', '.')}
-//   </p>
-// </div>
-// </section>

@@ -2,19 +2,21 @@
 @use '../../../../styles/mixins' as m;
 
 .allChallengeContainer {
+  display: flex;
+  justify-content: center;
   .challengeList {
     @include m.hide-scrollbar();
     display: grid;
     grid-template-columns: repeat(2, 1fr); // 가로 2열
     gap: 12px; // 카드 사이 여백
-    padding: 0 15.5px;
     overflow-y: scroll;
-    padding-bottom: 24px;
+    padding-bottom: 90px;
 
     .challengeItem {
       @include m.flex-column-center(flex-start, flex-start, 10px);
       flex-shrink: 0;
-      width: 175px;
+      width: 100%;
+      max-width: 44.5vw;
       height: auto;
       border-radius: 8px;
       box-shadow: 8px 8px 12px rgba(67, 0, 209, 0.05);
@@ -22,7 +24,8 @@
 
     .coverImage {
       margin: 6px 6px 0 6px;
-      width: 163px;
+      width: 100%;
+      max-width: 41.5vw;
       height: 175px;
       object-fit: cover;
       border-radius: 8px;
@@ -62,31 +65,3 @@
     }
   }
 }
-// <section className={s.allChallengeContainer}>
-// {/* 상단 타이틀 영역 */}
-// <header className={s.header}>
-//   <h2 className={s.title}>모든 챌린지</h2>
-//   <button className={s.viewAllButton}>더보기</button>
-// </header>
-
-// {/* 챌린지 리스트 */}
-// <div className={s.challengeList}>
-//   {dummyData.results.map((c) => (
-//     <article key={c.id} className={s.challengeItem}>
-//       <div className={s.coverImageBox}>
-//         <img src={img22} className={s.coverImage} />
-//       </div>
-//       <div className={s.contentBox}>
-//         <h3 className={s.challengeTitle}>{c.title}</h3>
-//         <ul className={s.metaList}>
-//           <li>{c.duration_weeks}주 동안</li>
-//           <li>{c.freq_type}</li>
-//           <li>{c.entry_fee}p</li>
-//           <li>{c.category}</li>
-//           <li>{c.member_count}명</li>
-//         </ul>
-//       </div>
-//     </article>
-//   ))}
-// </div>
-// </section>
