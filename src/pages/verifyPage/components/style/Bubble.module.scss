@@ -1,0 +1,46 @@
+@use '../../../../styles/mixins' as m;
+@use '../../../../styles/variables' as *;
+
+.bubble {
+  @include m.flex-row-center;
+  position: relative;
+  padding: 15px;
+  background: $color-white;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  border: $main-color1 solid 1px;
+  box-shadow: 8px 8px 8px 0 rgba(67, 0, 209, 0.06);
+
+  &::after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 16px 6px 0px;
+    border-color: $color-white transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    bottom: -16px;
+    left: 70%;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 16px 6px 0;
+    border-color: $main-color1 transparent;
+    display: block;
+    width: 0;
+    z-index: 0;
+    bottom: -17px;
+    left: 70%;
+  }
+
+  p {
+    font-weight: 500;
+    color: $main-color2;
+    white-space: pre-line;
+  }
+}

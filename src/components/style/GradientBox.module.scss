@@ -1,0 +1,22 @@
+@use '../../styles/mixins' as m;
+@use '../../styles/variables' as *;
+
+.gradientBox {
+  @include m.flex-row-center;
+  @include m.primary-gradient;
+  box-shadow: 0px 4px 10px 0px rgba(67, 0, 209, 0.06);
+  color: $gray-white;
+
+  .gradientText {
+    white-space: pre-line;
+    text-align: center;
+    @include m.font-size-weight(16px, 600);
+  }
+
+  &.isSquare {
+    box-shadow:
+      0px 4px 18px 0px rgba(67, 0, 209, 0.06),
+      inset -2px -2px 1px 0 #fcfcfc,
+      inset 2px 2px 1px 0 rgba(0, 0, 0, 0.1);
+  }
+}
