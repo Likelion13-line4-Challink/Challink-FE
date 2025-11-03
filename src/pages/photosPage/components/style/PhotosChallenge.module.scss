@@ -1,2 +1,30 @@
 @use '../../../../styles/mixins' as m;
 @use '../../../../styles/variables' as *;
+
+.noPhotos {
+  @include m.flex-column-center(center, center, 20px);
+  margin-top: 100px;
+
+  .firstText {
+    @include m.font-size-weight(12px, 400);
+    color: $color-white;
+  }
+}
+
+.photosContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); // 3개씩
+  gap: 20px 18px;
+  padding: 24px 22px;
+
+  .onePhoto {
+    width: 103px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+
+    border: 0.5px solid #b9b9b9;
+    border-radius: 4px;
+    box-shadow: 8px 8px 18px 0px rgba(67, 0, 209, 0.06);
+    cursor: pointer;
+  }
+}

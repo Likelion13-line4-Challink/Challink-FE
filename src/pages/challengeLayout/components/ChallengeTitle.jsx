@@ -12,12 +12,7 @@ const ChallengeTitle = ({ title, subTitle }) => {
         <p>{title}</p>
       </div>
 
-      <GradientBox
-        width="349px"
-        height="40px"
-        text={subTitle}
-        borderRadius="4px"
-      />
+      <GradientBox width="349px" height="40px" text={subTitle} borderRadius="4px" square={true} />
     </div>
   );
 };
