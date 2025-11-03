@@ -14,7 +14,8 @@
     .challengeItem {
       @include m.flex-column-center(flex-start, flex-start, 10px);
       flex-shrink: 0;
-      width: 175px;
+      width: 100%;
+      max-width: 44.5vw;
       height: auto;
       border-radius: 8px;
       box-shadow: 8px 8px 12px rgba(67, 0, 209, 0.05);
@@ -22,7 +23,8 @@
 
     .coverImage {
       margin: 6px 6px 0 6px;
-      width: 163px;
+      width: 100%;
+      max-width: 41.5vw;
       height: 175px;
       object-fit: cover;
       border-radius: 8px;
