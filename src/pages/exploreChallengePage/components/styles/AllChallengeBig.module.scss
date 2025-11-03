@@ -2,12 +2,13 @@
 @use '../../../../styles/mixins' as m;
 
 .allChallengeContainer {
+  display: flex;
+  justify-content: center;
   .challengeList {
     @include m.hide-scrollbar();
     display: grid;
     grid-template-columns: repeat(2, 1fr); // 가로 2열
     gap: 12px; // 카드 사이 여백
-    padding: 0 15.5px;
     overflow-y: scroll;
     padding-bottom: 90px;
 
