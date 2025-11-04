@@ -4,7 +4,7 @@
 .challengePageContainer {
   position: relative;
   @include m.flex-column-center(flex-start, center, 22px);
-  padding-top: 64px;
+  padding-top: 20px;
 }
 
 .challengeBody {
