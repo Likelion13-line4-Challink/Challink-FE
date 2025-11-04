@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import s from './MyPage.module.scss';
 import GradientBox from '../../components/GradientBox.jsx';
 import LOGO from '@assets/images/logo_gradient.png';
@@ -9,9 +9,24 @@ import Bubble from '../verifyPage/components/Bubble.jsx';
 import user from './datas/userDummy.json';
 import PointHistory from './components/PointHistory.jsx';
 import { formatNumberWithCommas } from '../../utils/format.js';
+import useBodyScrollLock from '../../hooks/useBodyScrollLock.js';
 
 const MyPage = () => {
   const isLoggedIn = true; // 로그인 여부(임시)
+  const [isPointModal, setIsPointModal] = useState(false); // 포인트 내역 모달
+
+  // 모달이 열려있을때 뒷배경 스크롤 방지
+  useBodyScrollLock(isPointModal);
+
+  // 포인트 모달 열기
+  const openPointModal = () => {
+    setIsPointModal(true);
+  };
+
+  // 포인트 모달 닫기
+  const closePointModal = () => {
+    setIsPointModal(false);
+  };
 
   if (!isLoggedIn) {
     return (
@@ -70,10 +85,9 @@ const MyPage = () => {
         </div>
       </section>
       {/* 포인트 관리 */}
-      <PointHistory />
       <section className={s.pointBox}>
         <p className={s.sectionTitle}>나의 지갑</p>
-        <div className={s.totalPoint}>
+        <div className={s.totalPoint} onClick={openPointModal}>
           <div className={s.point}>포인트 | {formatNumberWithCommas(point_balance)}</div>
           <p>클릭하면 상세 내역 조회가 가능합니다.</p>
         </div>
@@ -103,6 +117,13 @@ const MyPage = () => {
           <ChallengeCard />
         </div>
       </section>
+
+      {/* 포인트 내역 모달 */}
+      {isPointModal && (
+        <div className={s.modalOverlay}>
+          <PointHistory onClose={closePointModal} />
+        </div>
+      )}
     </div>
   );
 };

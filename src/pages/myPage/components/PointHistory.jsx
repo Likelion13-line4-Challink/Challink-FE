@@ -4,7 +4,7 @@ import PointItem from './PointItem';
 import GradientButton from '../../../components/GradientButton';
 import data from '../datas/pointItemDummy.json';
 
-const PointHistory = () => {
+const PointHistory = ({ onClose }) => {
   const points = data.results;
 
   return (
@@ -17,7 +17,7 @@ const PointHistory = () => {
           ))}
         </div>
       </div>
-      <GradientButton width="255px" height="48px" text={`확인`} />
+      <GradientButton width="255px" height="48px" text={`확인`} onClick={onClose} />
     </div>
   );
 };

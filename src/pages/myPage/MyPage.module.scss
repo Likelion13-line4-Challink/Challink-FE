@@ -61,6 +61,7 @@
 
   .totalPoint {
     @include m.flex-column-center(center, flex-start, 4px);
+    cursor: pointer;
 
     .point {
       @include m.flex-row-center(flex-start);
@@ -91,4 +92,16 @@
   .endCards {
     width: 100%;
   }
+}
+
+.modalOverlay {
+  @include m.flex-row-center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2px);
 }
