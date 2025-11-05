@@ -2,12 +2,9 @@
 @use '../../../../styles/mixins' as m;
 
 .headerContainer {
-  @include m.flex-column-center(center, flex-start, 12px);
-  width: 100%;
-
   .headerTop {
     @include m.flex-row-center(flex-start, center, 10.8px);
-    margin: 20px 0 0 24px;
+    margin: 20px 0 12px 24px;
     .backButton {
       border: none;
       background: none;
@@ -25,6 +22,9 @@
     }
   }
   .headerBottom {
-    margin: 0 24px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
   }
 }
