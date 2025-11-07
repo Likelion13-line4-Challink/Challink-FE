@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import AuthBox from '@components/authBox/AuthBox';
 import s from './components/styles/SignupPage.module.scss';
-import GradientButton from '@components/GradientButton';
+import AuthButton from '../../components/AuthButton';
+import useFormValidation from '../../hooks/useFormValidation';
+// import { signupUserApi } from '@/apis/auth';
 
 const SignupPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
-  const handleButtonClick = () => {
-    //연동
+
+  const isValid = useFormValidation({ name, email, pw, pw2 });
+
+  const handleButtonClick = async () => {
+    // await signupUserApi({ name, email, password: pw });
   };
 
   return (
@@ -48,15 +53,7 @@ const SignupPage = () => {
       </div>
       <p className={s.condition}>영문, 숫자 포함 8자리 이상</p>
       <div className={s.signUpBtnContainer}>
-        <GradientButton
-          width="100%"
-          height="60px"
-          text="회원가입"
-          borderRadius="16px"
-          isFilled="false"
-          fontSize="18px"
-          onClick={handleButtonClick}
-        />
+        <AuthButton text="회원가입" isActive={isValid} onClick={handleButtonClick} />
       </div>
     </div>
   );

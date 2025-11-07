@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import AuthBox from '@components/authBox/AuthBox';
-import GradientButton from '@components/GradientButton';
 import Footer from './components/Footer';
 import { CheckIcon, CheckFillIcon } from './components/icon/index';
 import s from './components/styles/LoginPage.module.scss';
+import AuthButton from '../../components/AuthButton';
+import useFormValidation from '../../hooks/useFormValidation';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [idSave, setIdSave] = useState(false);
+  const isValid = useFormValidation({ email, pw });
+
   const handleButtonClick = () => {
     //연동
   };
@@ -39,15 +42,7 @@ const LoginPage = () => {
       </div>
 
       <div className={s.loginBtnContainer}>
-        <GradientButton
-          width="100%"
-          height="60px"
-          text="로그인"
-          borderRadius="16px"
-          isFilled="false"
-          fontSize="18px"
-          onClick={handleButtonClick}
-        />
+        <AuthButton text="로그인" isActive={isValid} onClick={handleButtonClick} />
       </div>
       <Footer />
     </div>
