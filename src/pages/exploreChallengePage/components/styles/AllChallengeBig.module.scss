@@ -14,6 +14,7 @@
     grid-template-columns: repeat(2, 1fr); // 가로 2열
     gap: 12px; // 카드 사이 여백
     overflow-y: scroll;
+    overflow: visible;
 
     .challengeItem {
       @include m.flex-column-center(flex-start, flex-start, 10px);
