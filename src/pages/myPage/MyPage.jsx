@@ -13,6 +13,7 @@ import useNavigation from '../../hooks/useNavigation.js';
 import useAuthStore from '../../store/authStore.js';
 import { getCompletedChallengesApi, userInfoApi } from '../../apis/my/profileApi.js';
 import { logoutUserApi } from '../../apis/auth/authApi.js';
+import { useModal } from '../../hooks/useModal.js';
 
 const PAGE_SIZE = 10; // 한 번에 불러올 아이템 개수
 
@@ -25,6 +26,13 @@ const MyPage = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const logout = useAuthStore((state) => state.logout);
 
+  // 포인트 내역 모달 상태
+  const {
+    isOpen: isPointModal,
+    openModal: openPointModal,
+    closeModal: closePointModal,
+  } = useModal();
+
   //  무한 스크롤
   const [completedList, setCompletedList] = useState([]); // 완료한 챌린지들
   const [currentPage, setCurrentPage] = useState(1); // 다음에 불러올 페이지
@@ -35,14 +43,8 @@ const MyPage = () => {
   const [pageLoading, setPageLoading] = useState(true); // 페이지 전체(유저 정보) 로딩
   const [listLoading, setListLoading] = useState(false); // 챌린지 목록 로딩
 
-  const [isPointModal, setIsPointModal] = useState(false); // 포인트 내역 모달
-
   // 모달이 열려있을때 뒷배경 스크롤 방지
   useBodyScrollLock(isPointModal);
-
-  // 포인트 모달 열기/닫기
-  const openPointModal = () => setIsPointModal(true);
-  const closePointModal = () => setIsPointModal(false);
 
   // 마이페이지 상세 정보 조회
   useEffect(() => {
