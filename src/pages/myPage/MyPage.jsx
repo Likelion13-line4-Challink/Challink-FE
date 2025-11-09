@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from './MyPage.module.scss';
 import GradientBox from '../../components/GradientBox.jsx';
 import LOGO from '@assets/images/logo_gradient.png';
@@ -6,16 +6,24 @@ import CHAR from '@assets/images/character.svg';
 import GradientButton from '../../components/GradientButton.jsx';
 import ChallengeCard from '../mainPage/components/ChallengeCard.jsx';
 import Bubble from '../verifyPage/components/Bubble.jsx';
-import user from './datas/userDummy.json';
 import PointHistory from './components/PointHistory.jsx';
 import { formatNumberWithCommas } from '../../utils/format.js';
 import useBodyScrollLock from '../../hooks/useBodyScrollLock.js';
 import useNavigation from '../../hooks/useNavigation.js';
+import useAuthStore from '../../store/authStore.js';
+import { userInfoApi } from '../../apis/my/profileApi.js';
 
 const MyPage = () => {
   const { goTo } = useNavigation();
-  const isLoggedIn = true; // 로그인 여부(임시)
+
+  // 계정 정보
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const logout = useAuthStore((state) => state.logout);
+
   const [isPointModal, setIsPointModal] = useState(false); // 포인트 내역 모달
+  const [loading, setLoading] = useState(true); // 로딩 상태
 
   // 모달이 열려있을때 뒷배경 스크롤 방지
   useBodyScrollLock(isPointModal);
@@ -30,10 +38,38 @@ const MyPage = () => {
     setIsPointModal(false);
   };
 
+  // 마이페이지 상세 정보 조회
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchUserData = async () => {
+        try {
+          setLoading(true);
+          const data = await userInfoApi();
+          setUser(data);
+        } catch (error) {
+          console.error('마이페이지 정보 조회 실패:', error);
+          if (error.response && error.response.status === 401) {
+            handleLogout();
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
+
   const handleLogout = () => {
+    logout();
     goTo('/login');
-    localStorage.clear();
   };
+
+  if (loading) {
+    return <div className={s.myPageContainer}>로딩 중...</div>;
+  }
 
   if (!isLoggedIn) {
     return (
@@ -58,7 +94,7 @@ const MyPage = () => {
     );
   }
 
-  const { name, email, point_balance, completed_challenges_count } = user;
+  const { name, email, point_balance, completed_challenges_count } = user || {};
 
   return (
     <div className={s.myPageContainer}>
@@ -72,7 +108,11 @@ const MyPage = () => {
         <GradientBox
           width="345px"
           height="40px"
-          text={`지금까지 ${completed_challenges_count}개의 챌린지에 도전했어요!`}
+          text={
+            completed_challenges_count
+              ? `지금까지 ${completed_challenges_count}개의 챌린지에 도전했어요!`
+              : '아직 완료한 챌린지가 없네요. 함께 시작해봐요!'
+          }
           square={true}
         />
       </div>

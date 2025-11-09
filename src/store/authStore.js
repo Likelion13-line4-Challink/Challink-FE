@@ -20,12 +20,21 @@ const useAuthStore = create(
       },
 
       // 사용자 정보 업데이트
-      setUser: (userData) => {
-        set({ user: userData });
+      setUser: (newUserData) => {
+        set((state) => ({
+          user: { ...state.user, ...newUserData },
+        }));
       },
     }),
     {
       name: 'auth-storage', // localStorage에 저장될 키 이름
+
+      //localStorage에 저장할 상태
+      partialize: (state) => ({
+        accessToken: state.accessToken,
+        userId: state.user.id,
+        isLoggedIn: state.isLoggedIn,
+      }),
     },
   ),
 );
