@@ -11,3 +11,9 @@ export const loginUserApi = async (data) => {
   const res = await defaultInstance.post('/auth/login/', data);
   return res.data;
 };
+
+// 로그아웃
+export const logoutUserApi = async () => {
+  const res = await defaultInstance.post(`/auth/logout/`);
+  return res;
+};

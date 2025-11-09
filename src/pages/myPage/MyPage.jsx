@@ -12,6 +12,7 @@ import useBodyScrollLock from '../../hooks/useBodyScrollLock.js';
 import useNavigation from '../../hooks/useNavigation.js';
 import useAuthStore from '../../store/authStore.js';
 import { userInfoApi } from '../../apis/my/profileApi.js';
+import { logoutUserApi } from '../../apis/auth/authApi.js';
 
 const MyPage = () => {
   const { goTo } = useNavigation();
@@ -62,9 +63,16 @@ const MyPage = () => {
     }
   }, [isLoggedIn]);
 
-  const handleLogout = () => {
-    logout();
-    goTo('/login');
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    try {
+      await logoutUserApi();
+    } catch (error) {
+      console.error('서버 로그아웃 실패:', error);
+    } finally {
+      logout(); // 스토어 비우기
+      goTo('/');
+    }
   };
 
   if (loading) {
