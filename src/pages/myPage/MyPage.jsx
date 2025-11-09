@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import s from './MyPage.module.scss';
 import GradientBox from '../../components/GradientBox.jsx';
 import LOGO from '@assets/images/logo_gradient.png';
@@ -11,8 +11,10 @@ import { formatNumberWithCommas } from '../../utils/format.js';
 import useBodyScrollLock from '../../hooks/useBodyScrollLock.js';
 import useNavigation from '../../hooks/useNavigation.js';
 import useAuthStore from '../../store/authStore.js';
-import { userInfoApi } from '../../apis/my/profileApi.js';
+import { getCompletedChallengesApi, userInfoApi } from '../../apis/my/profileApi.js';
 import { logoutUserApi } from '../../apis/auth/authApi.js';
+
+const PAGE_SIZE = 10; // 한 번에 불러올 아이템 개수
 
 const MyPage = () => {
   const { goTo } = useNavigation();
@@ -23,45 +25,110 @@ const MyPage = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const logout = useAuthStore((state) => state.logout);
 
+  //  무한 스크롤
+  const [completedList, setCompletedList] = useState([]); // 완료한 챌린지들
+  const [currentPage, setCurrentPage] = useState(1); // 다음에 불러올 페이지
+  const [totalItems, setTotalItems] = useState(0); // 총 아이템 개수
+  const triggerRef = useRef(null); // Observer가 감시할 대상
+
+  // 로딩 State
+  const [pageLoading, setPageLoading] = useState(true); // 페이지 전체(유저 정보) 로딩
+  const [listLoading, setListLoading] = useState(false); // 챌린지 목록 로딩
+
   const [isPointModal, setIsPointModal] = useState(false); // 포인트 내역 모달
-  const [loading, setLoading] = useState(true); // 로딩 상태
 
   // 모달이 열려있을때 뒷배경 스크롤 방지
   useBodyScrollLock(isPointModal);
 
-  // 포인트 모달 열기
-  const openPointModal = () => {
-    setIsPointModal(true);
-  };
-
-  // 포인트 모달 닫기
-  const closePointModal = () => {
-    setIsPointModal(false);
-  };
+  // 포인트 모달 열기/닫기
+  const openPointModal = () => setIsPointModal(true);
+  const closePointModal = () => setIsPointModal(false);
 
   // 마이페이지 상세 정보 조회
   useEffect(() => {
     if (isLoggedIn) {
       const fetchUserData = async () => {
         try {
-          setLoading(true);
+          setPageLoading(true);
           const data = await userInfoApi();
           setUser(data);
+          console.log('마이페이지 정보 조회 성공');
         } catch (error) {
           console.error('마이페이지 정보 조회 실패:', error);
           if (error.response && error.response.status === 401) {
             handleLogout();
           }
         } finally {
-          setLoading(false);
+          setPageLoading(false);
         }
       };
-
       fetchUserData();
     } else {
-      setLoading(false);
+      setPageLoading(false);
+    }
+  }, [isLoggedIn, setUser]);
+
+  // 완료한 챌린지 목록 조회 (무한 스크롤)
+  const fetchCompletedChallenges = useCallback(
+    async (page) => {
+      if (listLoading) return;
+      setListLoading(true);
+
+      try {
+        const data = await getCompletedChallengesApi({
+          page: page,
+          page_size: PAGE_SIZE,
+        });
+        // 기존 목록에 새 목록을 이어붙임
+        setCompletedList((prev) => [...prev, ...data.items]);
+        setTotalItems(data.total); // 총 아이템 개수 갱신
+        setCurrentPage(page + 1); // 다음 페이지 번호 갱신
+        console.log(`완료 챌린지 ${page}페이지 조회 성공`);
+      } catch (error) {
+        console.error('완료한 챌린지 조회 실패:', error);
+      } finally {
+        setListLoading(false);
+      }
+    },
+    [listLoading],
+  );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setCompletedList([]);
+      setCurrentPage(1);
+      setTotalItems(0);
+
+      fetchCompletedChallenges(1);
     }
   }, [isLoggedIn]);
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        const hasMore = completedList.length < totalItems;
+        // 화면에 보이고 로딩 중이 아니며 더 불러올 아이템이 있을 때
+        if (entry.isIntersecting && !listLoading && hasMore) {
+          fetchCompletedChallenges(currentPage); // 다음 페이지 호출
+        }
+      },
+      { threshold: 1.0 }, // 100% 보였을 때
+    );
+
+    const currentTrigger = triggerRef.current;
+    if (currentTrigger) {
+      observer.observe(currentTrigger); // 감시 시작
+    }
+
+    // 감시 해제
+    return () => {
+      if (currentTrigger) {
+        observer.unobserve(currentTrigger);
+      }
+    };
+  }, [listLoading, currentPage, totalItems, completedList, fetchCompletedChallenges]);
 
   // 로그아웃 함수
   const handleLogout = async () => {
@@ -75,10 +142,11 @@ const MyPage = () => {
     }
   };
 
-  if (loading) {
+  if (pageLoading) {
     return <div className={s.myPageContainer}>로딩 중...</div>;
   }
 
+  // 비로그인 UI
   if (!isLoggedIn) {
     return (
       <div className={s.myPageContainer}>
@@ -166,11 +234,20 @@ const MyPage = () => {
           />
         </div>
       </section>
+
+      {/* 완료한 챌린지 */}
       <div className={s.divider} />
       <section className={s.endChallenges}>
         <p className={s.sectionTitle}>완료한 챌린지</p>
         <div className={s.endCards}>
-          <ChallengeCard />
+          {completedList.length > 0
+            ? completedList.map((item) => <ChallengeCard key={item.challenge.id} item={item} />)
+            : !listLoading && <p></p>}
+        </div>
+
+        {/* 무한 스크롤 트리거 */}
+        <div ref={triggerRef} className={s.scrollTrigger}>
+          {listLoading && <p>불러오는 중...</p>}
         </div>
       </section>
 
