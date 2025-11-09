@@ -11,3 +11,19 @@ export const getCompletedChallengesApi = async (params) => {
   const res = await defaultInstance.get(`/challenges/my/completed/`, { params });
   return res.data;
 };
+
+// 포인트 내역(GET)
+export const getHistoryPointApi = async ({ page, page_size }) => {
+  const res = await defaultInstance.get(`/wallet/history/`, {
+    params: { page, page_size },
+  });
+  return res.data;
+};
+// 포인트 내역: useInfiniteScroll 훅을 위한 Wrapper 함수
+export const getPointHistoryForHook = async ({ page, page_size }) => {
+  const data = await getHistoryPointApi({ page, page_size });
+  return {
+    items: data.results,
+    total: data.total_count,
+  };
+};
