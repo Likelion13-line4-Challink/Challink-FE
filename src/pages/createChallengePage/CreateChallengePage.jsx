@@ -109,7 +109,7 @@ const CreateChallengePage = () => {
     const start = new Date();
     const end = addDays(start, Number(durationWeeks) * 7);
 
-    // 1. 모든 텍스트 데이터를 basePayload에 준비합니다.
+    // basePayload
     const basePayload = {
       title: title.trim(),
       description: intro.trim(),
@@ -128,11 +128,11 @@ const CreateChallengePage = () => {
 
     try {
       let payload;
-      let options = {}; // createChallengeApi에 전달할 옵션
+      let options = {};
 
-      // 2. (핵심) imageFile (전송용 File 객체)의 존재 여부로 분기
+      //  imageFile 존재 여부로 분기
       if (imageFile) {
-        // ✅ 이미지가 있을 때: FormData로 전송 (MenuUploadPage와 동일)
+        // 이미지가 있을 때: FormData로 전송
         const fd = new FormData();
 
         // basePayload의 모든 키-값 쌍을 FormData에 추가
@@ -146,16 +146,13 @@ const CreateChallengePage = () => {
         fd.append('cover_image', imageFile);
 
         payload = fd;
-        options = { multipart: true }; // API 함수가 multipart임을 알도록 옵션 추가
+        options = { multipart: true };
       } else {
-        // ✅ 이미지가 없을 때: JSON으로 전송 (요청하신대로 null 포함)
+        //  이미지가 없을 때: JSON으로 전송
         payload = { ...basePayload, cover_image: null };
-        // options는 {} 그대로 둡니다 (JSON이 기본)
       }
 
-      // 3. createChallengeApi 호출
-      // (createChallengeApi 함수가 payload와 options를 받아
-      // options.multipart 여부에 따라 Content-Type을 분기 처리해야 함)
+      // createChallengeApi 호출
       const result = await createChallengeApi(payload, options);
       setCreatedChallenge(result);
     } catch (err) {
@@ -325,7 +322,7 @@ const CreateChallengePage = () => {
 
       {/* 생성 완료 모달 */}
       {createdChallenge && (
-        <ChallengeModal challenge={createdChallenge} onClose={handleCloseModal} />
+        <ChallengeModal challengeId={createdChallenge.challenge_id} onClose={handleCloseModal} />
       )}
     </div>
   );
