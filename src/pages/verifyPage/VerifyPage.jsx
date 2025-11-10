@@ -5,8 +5,11 @@ import EDIT from '@assets/images/icons/edit_icon.svg';
 import GradientBox from '../../components/GradientBox';
 import UploadPhoto from './components/UploadPhoto';
 import IconButton from '../../components/IconButton';
+import { useParams } from 'react-router-dom';
 
 const VerifyPage = () => {
+  const { id } = useParams();
+
   const [isEditing, setIsEditing] = useState(false);
   const [conditionText, setConditionText] = useState('책 페이지 번호 + 손가락 브이');
 
@@ -34,7 +37,7 @@ const VerifyPage = () => {
         <p className={s.challengePeriod}>2025.10.01 ~ 2025.10.08</p>
 
         {/* 사진 + 업로드 버튼 */}
-        <UploadPhoto />
+        <UploadPhoto challengeId={id} />
 
         {/* 인증 조건 */}
         <div className={s.verifyCondition}>
