@@ -33,6 +33,7 @@ const useAuthStore = create(
       partialize: (state) => ({
         accessToken: state.accessToken,
         userId: state.user?.id || null,
+        userName: state.user?.name || null,
         isLoggedIn: state.isLoggedIn,
       }),
     },
