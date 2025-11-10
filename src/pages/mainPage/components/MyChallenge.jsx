@@ -3,7 +3,6 @@ import s from './styles/MyChallenge.module.scss';
 import Character from '@/assets/images/character_body.svg';
 import Tail from '@assets/images/character_tail.svg';
 import Floor from '../../../assets/images/character_floor.svg';
-import ChallengeCard from './ChallengeCard';
 
 const MyChallenge = () => {
   return (
