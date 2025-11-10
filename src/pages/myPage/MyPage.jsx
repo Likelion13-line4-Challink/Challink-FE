@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import s from './MyPage.module.scss';
 import GradientBox from '../../components/GradientBox.jsx';
 import LOGO from '@assets/images/logo_gradient.png';
@@ -103,7 +103,7 @@ const MyPage = () => {
 
     const chargeData = {
       amount: 10000,
-      description: '계좌 이체 충전',
+      description: '충전',
     };
 
     try {
