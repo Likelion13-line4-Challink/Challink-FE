@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { challengeDetailApi } from '@apis/auth/challengeApi';
+
 import s from './ChallengeModal.module.scss';
-import dummyData from './ChallengeModalDummy.json';
-import img23 from './23.png';
 import closeIcon from '../../assets/images/icon_close.svg';
 import checkFillIcon from '../../assets/images/check_fill_icon.svg';
 import checkIcon from '../../assets/images/check_icon.svg';
 import GradientButton from '../../components/GradientButton';
 
-const ChallengeModal = ({ onClose }) => {
-  const c = dummyData;
+const ChallengeModal = ({ onClose, challengeId }) => {
+  // API 데이터 관리
+  const [challenge, setChallenge] = useState(null);
+  // const [loading, setLoading] = useState(false);
 
   const [agreed, setAgreed] = useState(false);
+
+  // 모달 상태 관리
+  useEffect(() => {
+    // if (!challengeId) return; // 필요한 지 모르겠음
+
+    const fetchDetail = async () => {
+      try {
+        // setLoading(true);
+        const data = await challengeDetailApi(challengeId);
+        setChallenge(data);
+      } catch (err) {
+        console.log(err);
+      } // finally {
+      //   setLoading(false); }
+    };
+
+    fetchDetail();
+  }, [challengeId]); // challengeId가 바뀔 때마다 실행
 
   const handleAgreeClick = () => {
     setAgreed((prev) => !prev);
@@ -29,29 +49,30 @@ const ChallengeModal = ({ onClose }) => {
         </button>
 
         {/* 제목 */}
-        <h2 className={s.challengeTitle}>{c.title}</h2>
+        <h2 className={s.challengeTitle}>{challenge.title}</h2>
 
         {/* 유저 정보 */}
         <div className={s.userInfo}>
-          <p className={s.userName}>{c.userName}님의 챌린지</p>
+          <p className={s.userName}>{challenge.owner_name}님의 챌린지</p>
         </div>
 
         {/* 커버 */}
-        <img src={img23} className={s.coverImage} alt="" />
+        <img src={challenge.over_image} className={s.coverImage} alt="" />
 
         {/* 상세 카드 */}
         <div className={s.challengeInfoCard}>
           <h3 className={s.challengeInfo}>
-            {c.entry_fee.toLocaleString()}p 걸고 {c.duration_weeks}주 동안 {c.freq_type} 인증하기!
+            {challenge.entry_fee.toLochallengealeString()}p 걸고 {challenge.duration_weeks}주 동안{' '}
+            {challenge.freq_type} 인증하기!
           </h3>
 
           <div className={s.meta}>
-            <p className={s.description}>{c.description}</p>
-            <p className={s.aiCondition}>{c.ai_condition}</p>
+            <p className={s.description}>{challenge.subtitle}</p>
+            <p className={s.aiCondition}>{challenge.ai_condition}</p>
           </div>
 
           <p className={s.duration}>
-            {c.start_date.replaceAll('-', '.')} ~ {c.end_date.replaceAll('-', '.')}
+            {challenge.start_date.replaceAll('-', '.')} ~ {challenge.end_date.replaceAll('-', '.')}
           </p>
         </div>
 
