@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from './MyPage.module.scss';
 import GradientBox from '../../components/GradientBox.jsx';
 import LOGO from '@assets/images/logo_gradient.png';
@@ -6,35 +6,96 @@ import CHAR from '@assets/images/character.svg';
 import GradientButton from '../../components/GradientButton.jsx';
 import ChallengeCard from '../mainPage/components/ChallengeCard.jsx';
 import Bubble from '../verifyPage/components/Bubble.jsx';
-import user from './datas/userDummy.json';
 import PointHistory from './components/PointHistory.jsx';
 import { formatNumberWithCommas } from '../../utils/format.js';
 import useBodyScrollLock from '../../hooks/useBodyScrollLock.js';
 import useNavigation from '../../hooks/useNavigation.js';
+import useAuthStore from '../../store/authStore.js';
+import { getCompletedChallengesApi, userInfoApi } from '../../apis/my/profileApi.js';
+import { logoutUserApi } from '../../apis/auth/authApi.js';
+import { useModal } from '../../hooks/useModal.js';
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll.js';
 
 const MyPage = () => {
   const { goTo } = useNavigation();
-  const isLoggedIn = true; // 로그인 여부(임시)
-  const [isPointModal, setIsPointModal] = useState(false); // 포인트 내역 모달
+
+  // 계정 정보
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const logout = useAuthStore((state) => state.logout);
+
+  // 포인트 내역 모달 상태
+  const {
+    isOpen: isPointModal,
+    openModal: openPointModal,
+    closeModal: closePointModal,
+  } = useModal();
+
+  // 무한 스크롤 상태
+  const {
+    items: completedList, // 완료한 챌린지들
+    isLoading: listLoading,
+    triggerRef,
+    reset: resetList,
+    loadFirstPage, // 첫 페이지 로드 함수
+  } = useInfiniteScroll(getCompletedChallengesApi);
+
+  // 로딩 State
+  const [pageLoading, setPageLoading] = useState(true); // 페이지 전체(유저 정보) 로딩
 
   // 모달이 열려있을때 뒷배경 스크롤 방지
   useBodyScrollLock(isPointModal);
 
-  // 포인트 모달 열기
-  const openPointModal = () => {
-    setIsPointModal(true);
+  // 마이페이지 상세 정보 조회
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchUserData = async () => {
+        try {
+          setPageLoading(true);
+          const data = await userInfoApi();
+          setUser(data);
+          console.log('마이페이지 정보 조회 성공');
+        } catch (error) {
+          console.error('마이페이지 정보 조회 실패:', error);
+          if (error.response && error.response.status === 401) {
+            handleLogout();
+          }
+        } finally {
+          setPageLoading(false);
+        }
+      };
+      fetchUserData();
+    } else {
+      setPageLoading(false);
+    }
+  }, [isLoggedIn, setUser]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadFirstPage();
+    } else {
+      resetList();
+    }
+  }, [isLoggedIn, loadFirstPage, resetList]);
+
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    try {
+      await logoutUserApi();
+    } catch (error) {
+      console.error('서버 로그아웃 실패:', error);
+    } finally {
+      logout(); // 스토어 비우기
+      goTo('/');
+    }
   };
 
-  // 포인트 모달 닫기
-  const closePointModal = () => {
-    setIsPointModal(false);
-  };
+  if (pageLoading) {
+    return <div className={s.myPageContainer}>로딩 중...</div>;
+  }
 
-  const handleLogout = () => {
-    goTo('/login');
-    localStorage.clear();
-  };
-
+  // 비로그인 UI
   if (!isLoggedIn) {
     return (
       <div className={s.myPageContainer}>
@@ -58,7 +119,7 @@ const MyPage = () => {
     );
   }
 
-  const { name, email, point_balance, completed_challenges_count } = user;
+  const { name, email, point_balance, completed_challenges_count } = user || {};
 
   return (
     <div className={s.myPageContainer}>
@@ -72,7 +133,11 @@ const MyPage = () => {
         <GradientBox
           width="345px"
           height="40px"
-          text={`지금까지 ${completed_challenges_count}개의 챌린지에 도전했어요!`}
+          text={
+            completed_challenges_count
+              ? `지금까지 ${completed_challenges_count}개의 챌린지에 도전했어요!`
+              : '아직 완료한 챌린지가 없네요. 함께 시작해봐요!'
+          }
           square={true}
         />
       </div>
@@ -118,11 +183,20 @@ const MyPage = () => {
           />
         </div>
       </section>
+
+      {/* 완료한 챌린지 */}
       <div className={s.divider} />
       <section className={s.endChallenges}>
         <p className={s.sectionTitle}>완료한 챌린지</p>
         <div className={s.endCards}>
-          <ChallengeCard />
+          {completedList.length > 0
+            ? completedList.map((item) => <ChallengeCard key={item.challenge.id} item={item} />)
+            : !listLoading && <p></p>}
+        </div>
+
+        {/* 무한 스크롤 트리거 */}
+        <div ref={triggerRef} className={s.scrollTrigger}>
+          {listLoading && <p>불러오는 중...</p>}
         </div>
       </section>
 

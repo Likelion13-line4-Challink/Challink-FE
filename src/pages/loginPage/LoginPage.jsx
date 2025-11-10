@@ -38,7 +38,7 @@ const LoginPage = () => {
     try {
       // setLoading(true);
       const result = await loginUserApi(form);
-      console.log('로그인 성공', result);
+      console.log('로그인 성공');
       // 스토어에 액세스 토큰 저장
       login(result.access_token, result.user);
 
