@@ -5,23 +5,17 @@ import useAuthStore from '../../store/authStore';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ===== 공통 요청 인터셉터
-
 const onRequestFulfilled = (config) => {
   // 예외 처리할 공개 URL 목록
-
   const publicUrls = ['/auth/login/', '/auth/signup/'];
-
   const isPublicRequest = publicUrls.some((url) => config.url.includes(url));
 
   // 공개 요청(로그인, 회원가입)이 아닐 경우에만 토큰을 첨부
-
   if (!isPublicRequest) {
     // 스토어에서 토큰 가져오기
-
     const { accessToken } = useAuthStore.getState();
 
     // 토큰이 있다면 헤더에 추가
-
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
