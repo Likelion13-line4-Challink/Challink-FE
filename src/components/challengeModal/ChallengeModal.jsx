@@ -37,6 +37,7 @@ const ChallengeModal = ({ onClose, challengeData }) => {
       // 성공
       const result = await joinChallengeApi(challengeData.id, { agree_terms: agreed });
       console.log(result);
+      onClose();
     } catch (err) {
       if (err.response) {
         const { status, data } = err.response;
