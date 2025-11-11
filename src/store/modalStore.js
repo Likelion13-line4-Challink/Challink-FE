@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 
 const useModalStore = create((set) => ({
-  // modalData가 null이 아니면 모달을 띄웁니다.
-  // 예: { modalType: 'ChallengeModal', modalProps: { challengeData: {...} } }
+  // modalData가 null이 아닐 때 모달 띄우기
   modalData: null,
 
   // 모달 열기
