@@ -34,7 +34,7 @@ const Header = () => {
           return;
         }
 
-        // 2. 챌린지 ID로 상세 API 호출
+        //  챌린지 ID로 상세 API 호출
         const challengeId = listResult.items[0].id;
         const detailData = await challengeDetailApi(challengeId);
 
