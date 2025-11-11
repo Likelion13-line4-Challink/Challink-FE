@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createChallengeApi, challengeDetailApi } from '@apis/auth/challengeApi';
 import s from './components/styles/CreateChallengePage.module.scss';
 import Header from './components/Header';
 import DropBox from './components/DropBox';
@@ -10,6 +11,7 @@ import Category2 from '@assets/images/category_2.svg';
 import Category3 from '@assets/images/category_3.svg';
 import Category4 from '@assets/images/category_4.svg';
 import useNavigation from '@hooks/useNavigation';
+import ChallengeModal from '@components/challengeModal/ChallengeModal.jsx';
 import useFormValidation from '../../hooks/useFormValidation';
 
 const CATEGORIES = [
@@ -19,21 +21,15 @@ const CATEGORIES = [
   { id: 4, key: 'ETC', label: '기타', src: Category4 },
 ];
 
-const PERIOD_OPTIONS = [
-  { value: '1', label: '1주 동안' },
-  { value: '2', label: '2주 동안' },
-  { value: '3', label: '3주 동안' },
-  { value: '4', label: '4주 동안' },
-  { value: '5', label: '5주 동안' },
-  { value: '6', label: '6주 동안' },
-  { value: '7', label: '7주 동안' },
-  { value: '8', label: '8주 동안' },
-];
+const PERIOD_OPTIONS = Array.from({ length: 8 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1}주 동안`,
+}));
 
 const FREQUENCY_OPTIONS = [
   { value: 'DAILY', label: '매일' },
-  { value: 'WEEKDAYS', label: '평일만' },
-  { value: 'WEEKENDS', label: '주말만' },
+  { value: 'WEEKDAYS', label: '주중' },
+  { value: 'WEEKENDS', label: '주말' },
   { value: '1_DAYS_PER_WEEK', label: '주 1일' },
   { value: '2_DAYS_PER_WEEK', label: '주 2일' },
   { value: '3_DAYS_PER_WEEK', label: '주 3일' },
@@ -45,46 +41,150 @@ const FREQUENCY_OPTIONS = [
 const CreateChallengePage = () => {
   const { goBack } = useNavigation();
 
-  // 텍스트 입력
+  // 챌린지 생성 데이터 state
   const [title, setTitle] = useState('');
   const [intro, setIntro] = useState('');
   const [fee, setFee] = useState('');
   const [rule, setRule] = useState('');
-
-  // 카테고리
-  const [categoryId, setCategoryId] = useState(''); // number
-
-  // 기간 / 인증 빈도
-  const [durationWeeks, setDurationWeeks] = useState('1');
-  const [frequency, setFrequency] = useState('DAILY'); // DAILY | WEEKDAYS | WEEKENDS | n_DAYS_PER_WEEK…
-
-  // 정산 방법
+  // 선택
+  const [categoryId, setCategoryId] = useState();
+  const [durationWeeks, setDurationWeeks] = useState('');
+  const [frequency, setFrequency] = useState('');
   const [settlementMethod, setSettlementMethod] = useState('');
-
-  // 이미지
+  // 이미지 업로드
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-
   const fileInputRef = useRef(null);
-  const handleFileClick = () => {
-    fileInputRef.current.click();
-  };
+
+  // 챌린지 모달, api state
+  // 생성된 챌린지 ID
+  const [newChallengeId, setNewChallengeId] = useState(null);
+
+  // 상세 API 응답 데이터
+  const [detailData, setDetailData] = useState(null);
+  // const [isDetailLoading, setIsDetailLoading] = useState(false);
+
+  // 핸들러 및 유틸 함수
+  // 이미지 핸들러
+  const handleFileClick = () => fileInputRef.current?.click();
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (image) URL.revokeObjectURL(image);
+    setImage(URL.createObjectURL(file));
+    setImageFile(file);
+  };
+
+  // URL 정리
+  useEffect(() => {
+    return () => {
+      if (image) {
+        URL.revokeObjectURL(image);
+      }
+    };
+  }, [image]);
+
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setNewChallengeId(null); // ID를 null로 -> useEffect 트리거 -> detailData도 null이 됨
+  };
+
+  // 버튼 활성화
+  const isBaseValid = useFormValidation({ title, fee, rule });
+  const isActive =
+    isBaseValid && !!categoryId && !!settlementMethod && !!durationWeeks && !!frequency;
+
+  // 날짜/파싱 유틸
+  const ymdKST = (date) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date); // YYYY-MM-DD
+  const addDays = (date, days) => new Date(date.getTime() + days * 86400000);
+
+  // 상세 API 호출
+  // newChallengeId 변경 시 상세 API 호출
+  useEffect(() => {
+    if (!newChallengeId) {
+      setDetailData(null); // ID가 null이면(닫기) 상세 데이터 비우기
+      return;
+    }
+
+    // ID가 생기면 상세 API 호출
+    (async () => {
+      try {
+        // setIsDetailLoading(true);
+
+        const data = await challengeDetailApi(newChallengeId);
+        setDetailData(data); // API 응답 state에 저장
+      } catch (err) {
+        console.error('챌린지 상세 조회 실패:', err);
+      } // finally {
+      // setIsDetailLoading(false);
+      // }
+    })();
+  }, [newChallengeId]); // newChallengeId가 바뀔 때마다 실행
+
+  // 챌린지 생성 핸들러
+  const handleCreateClick = async (e) => {
+    e.preventDefault();
+
+    const entryFeeNum = Number(String(fee).replace(/,/g, '').trim() || 0);
+    // const { isNDays, n } = parseWeeklyFreq(frequency);
+    const start = new Date();
+    const end = addDays(start, Number(durationWeeks) * 7);
+
+    // freq_type, freq_n_days
+    let freqTypeToSend = null;
+    let freqNDaysToSend = null;
+
+    if (frequency.includes('_DAYS_PER_WEEK')) {
+      freqTypeToSend = 'N_DAYS_PER_WEEK';
+      freqNDaysToSend = Number(frequency.split('_')[0]);
+    } else {
+      freqTypeToSend = frequency;
+      freqNDaysToSend = null;
+    }
+
+    const basePayload = {
+      title: title.trim(),
+      description: intro.trim(),
+      category_id: Number(categoryId),
+      entry_fee: entryFeeNum,
+      duration_weeks: Number(durationWeeks),
+      freq_type: freqTypeToSend,
+      freq_n_days: freqNDaysToSend,
+
+      ai_condition_text: rule.trim(),
+      settlement_method: settlementMethod,
+      start_date: ymdKST(start),
+      end_date: ymdKST(end),
+      status: 'active',
+    };
+
+    try {
+      const fd = new FormData();
+      Object.entries(basePayload).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) {
+          fd.append(k, String(v));
+        }
+      });
+      if (imageFile) {
+        // 이미지가 있으면 파일 첨부
+        fd.append('cover_image', imageFile);
+      } else {
+        // 이미지가 없으면 빈 문자열('')
+        fd.append('cover_image', '');
+      }
+      // createChallengeApi 호출, ID 저장
+      const payload = fd;
+      const options = { multipart: true };
+
+      const result = await createChallengeApi(payload, options);
+      setNewChallengeId(result.challenge_id);
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  // 버튼 활성화 조건
-  const isBaseValid = useFormValidation({ title, fee, rule });
-  const isActive = isBaseValid && !!categoryId && !!settlementMethod && !!imageFile;
-
-  const handleCreateClick = () => {
-    // 챌린지 생성 API 호출
-  };
-
+  // JSX 렌더링
   return (
     <div className={s.CreateChallengeContainer} style={{ marginBottom: '122px' }}>
       <Header />
@@ -96,11 +196,13 @@ const CreateChallengePage = () => {
             <img src={image} alt="업로드된 이미지" className={s.previewImg} />
           ) : (
             <>
-              <img src={PlusIcon} style={{ width: '37px' }} />
+              <img src={PlusIcon} style={{ width: '37px' }} alt="이미지 추가 아이콘" />
               <p className={s.photoSelect}>사진(선택)</p>
             </>
           )}
         </button>
+
+        {/* 실제 파일 input */}
         <input
           type="file"
           accept="image/*"
@@ -108,6 +210,7 @@ const CreateChallengePage = () => {
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
+
         <div className={s.infoRight}>
           <ChallengeField
             placeholder="챌린지 제목을 입력하세요"
@@ -125,17 +228,15 @@ const CreateChallengePage = () => {
         </div>
       </section>
 
-      {/* 참가비 */}
       <section className={s.challengeFieldContainer}>
         <label className={s.fieldLabel}>참가비</label>
         <ChallengeField
           placeholder="최대 100,000"
           value={fee}
           onChange={(e) => {
-            const rawValue = e.target.value.replace(/[^0-9]/g, '');
-            const limited = Math.min(Number(rawValue), 100000);
-            const formatted = limited.toLocaleString(); // 천단위 콤마
-            setFee(formatted);
+            const raw = e.target.value.replace(/[^0-9]/g, '');
+            const limited = Math.min(Number(raw), 100000);
+            setFee(limited.toLocaleString());
           }}
           type="text"
           rightAddon="포인트"
@@ -153,7 +254,6 @@ const CreateChallengePage = () => {
             <label className={s.fieldLabel}>기간</label>
             <DropBox options={PERIOD_OPTIONS} value={durationWeeks} onChange={setDurationWeeks} />
           </div>
-
           <div className={s.fieldRight}>
             <label className={s.fieldLabel}>인증 빈도</label>
             <DropBox options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
@@ -175,12 +275,12 @@ const CreateChallengePage = () => {
                 <button
                   type="button"
                   className={s.categoryButton}
-                  onClick={() => setCategoryId(cat.id)} // number로 저장
+                  onClick={() => setCategoryId(String(cat.id))}
                   aria-pressed={active}
                 >
-                  <img src={cat.src} />
+                  <img src={cat.src} alt={cat.label} />
                 </button>
-                <p className={s.categoryLabel}> {cat.label}</p>
+                <p className={s.categoryLabel}>{cat.label}</p>
               </div>
             );
           })}
@@ -209,10 +309,10 @@ const CreateChallengePage = () => {
           <span className={s.fieldLabel}>정산 방법</span>
           <div className={s.settlementGroup}>
             {[
-              { id: 'EQUAL', label: '모인 참가비를 성공자들끼리 N:1 분배해요' },
+              { id: 'N_TO_ONE_WINNER', label: '모인 참가비를 성공자들끼리 N:1 분배해요' },
               { id: 'PROPORTIONAL', label: '참가비를 성공률에 따라 차등 분배해요' },
-              { id: 'WINNER_TAKES_ALL', label: '성공자만 참가비를 돌려받고 남은 건 N:1 분배해요' },
-              { id: 'CUSTOM', label: '실패자 참가비는 Challink에게 기부해요♥' },
+              { id: 'REFUND_PLUS_ALL', label: '성공자만 참가비를 돌려받고 남은 건 N:1 분배해요' },
+              { id: 'DONATE_FAIL_FEE', label: '실패자 참가비는 Challink에게 기부해요♥' },
             ].map((method) => {
               const active = settlementMethod === method.id;
               return (
@@ -237,13 +337,18 @@ const CreateChallengePage = () => {
           취소
         </button>
         <button
-          className={`${s.createButton} ${isActive ? s.createButtonActive : ''}`} // 활성화 클래스 조건부 적용
+          className={`${s.createButton} ${isActive ? s.createButtonActive : ''}`}
           onClick={handleCreateClick}
-          disabled={!isActive} // disabled 속성 추가
+          disabled={!isActive}
         >
           챌린지 만들기
         </button>
       </section>
+
+      {/* 모달 렌더링 조건 detailData가 있고 (API 응답 완료), is_joined가 false인 (미참여) 경우 */}
+      {detailData && !detailData.my_membership.is_joined && (
+        <ChallengeModal challengeData={detailData} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
