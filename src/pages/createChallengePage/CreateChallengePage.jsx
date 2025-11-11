@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createChallengeApi } from '@apis/auth/challengeApi';
+import { createChallengeApi, challengeDetailApi } from '@apis/auth/challengeApi';
 import s from './components/styles/CreateChallengePage.module.scss';
 import Header from './components/Header';
 import DropBox from './components/DropBox';
@@ -41,25 +41,32 @@ const FREQUENCY_OPTIONS = [
 const CreateChallengePage = () => {
   const { goBack } = useNavigation();
 
-  // 텍스트 입력
+  // --- (A) 챌린지 생성 데이터 state ---
   const [title, setTitle] = useState('');
   const [intro, setIntro] = useState('');
   const [fee, setFee] = useState('');
   const [rule, setRule] = useState('');
-
   // 선택
   const [categoryId, setCategoryId] = useState();
   const [durationWeeks, setDurationWeeks] = useState('');
   const [frequency, setFrequency] = useState('');
   const [settlementMethod, setSettlementMethod] = useState('');
-
-  // 이미지 URL
-  const [image, setImage] = useState(null); // 미리보기용 blob URL
-  const [imageFile, setImageFile] = useState(null); // 서버로 보낼 File 객체
+  // 이미지
+  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  const handleFileClick = () => fileInputRef.current?.click();
+  // --- (B) 챌린지 모달, api state ---
+  // 생성된 챌린지 ID (상세 API 호출)
+  const [newChallengeId, setNewChallengeId] = useState(null);
 
+  // 상세 API 응답 데이터 (모달)
+  const [detailData, setDetailData] = useState(null);
+  // const [isDetailLoading, setIsDetailLoading] = useState(false);
+
+  // --- (C) 핸들러 및 유틸 함수 ---
+  // 이미지 핸들러
+  const handleFileClick = () => fileInputRef.current?.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -68,8 +75,8 @@ const CreateChallengePage = () => {
     setImageFile(file); // 전송용
   };
 
+  // Blob URL 정리 useEffect
   useEffect(() => {
-    // image 상태(blob URL)가 존재할 때만 cleanup 함수 반환
     return () => {
       if (image) {
         URL.revokeObjectURL(image);
@@ -77,21 +84,20 @@ const CreateChallengePage = () => {
     };
   }, [image]);
 
-  // 모달
-  const [createdChallenge, setCreatedChallenge] = useState(null);
-  const handleCloseModal = () => setCreatedChallenge(null);
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setNewChallengeId(null); // ID를 null로 -> useEffect 트리거 -> detailData도 null이 됨
+  };
 
   // 버튼 활성화
   const isBaseValid = useFormValidation({ title, fee, rule });
   const isActive =
     isBaseValid && !!categoryId && !!settlementMethod && !!durationWeeks && !!frequency;
 
-  // 날짜 유틸 (KST)
+  // 날짜/파싱 유틸
   const ymdKST = (date) =>
     new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date); // YYYY-MM-DD
   const addDays = (date, days) => new Date(date.getTime() + days * 86400000);
-
-  // 주 N일 파싱
   const parseWeeklyFreq = (value) => {
     if (/_DAYS_PER_WEEK$/.test(value)) {
       const n = Number(value.split('_')[0]);
@@ -100,7 +106,29 @@ const CreateChallengePage = () => {
     return { isNDays: false, n: null };
   };
 
-  // 연동
+  // --- (D) 상세 API 호출 useEffect ---
+  // newChallengeId 변경 시 상세 API 호출
+  useEffect(() => {
+    if (!newChallengeId) {
+      setDetailData(null); // ID가 null이면(닫기) 상세 데이터 비우기
+      return;
+    }
+
+    // ID가 생겼으므로 상세 API 호출
+    (async () => {
+      try {
+        // setIsDetailLoading(true);
+        const data = await challengeDetailApi(newChallengeId);
+        setDetailData(data); // API 응답을 state에 저장
+      } catch (err) {
+        console.error('챌린지 상세 조회 실패:', err);
+      } // finally {
+      // setIsDetailLoading(false);
+      // }
+    })();
+  }, [newChallengeId]); // newChallengeId가 바뀔 때마다 실행
+
+  // --- (E) 챌린지 생성 핸들러 ---
   const handleCreateClick = async (e) => {
     e.preventDefault();
 
@@ -109,7 +137,6 @@ const CreateChallengePage = () => {
     const start = new Date();
     const end = addDays(start, Number(durationWeeks) * 7);
 
-    // basePayload
     const basePayload = {
       title: title.trim(),
       description: intro.trim(),
@@ -134,17 +161,14 @@ const CreateChallengePage = () => {
       if (imageFile) {
         // 이미지가 있을 때: FormData로 전송
         const fd = new FormData();
-
         // basePayload의 모든 키-값 쌍을 FormData에 추가
         Object.entries(basePayload).forEach(([k, v]) => {
           if (v !== undefined && v !== null) {
             fd.append(k, String(v));
           }
         });
-
         // 이미지 파일 추가
         fd.append('cover_image', imageFile);
-
         payload = fd;
         options = { multipart: true };
       } else {
@@ -152,14 +176,15 @@ const CreateChallengePage = () => {
         payload = { ...basePayload, cover_image: null };
       }
 
-      // createChallengeApi 호출
+      // createChallengeApi 호출, ID 저장
       const result = await createChallengeApi(payload, options);
-      setCreatedChallenge(result);
+      setNewChallengeId(result.challenge_id); // ID를 state에 저장 (상세api useEffect trigger)
     } catch (err) {
       console.log(err);
     }
   };
 
+  // --- (F) JSX 렌더링 ---
   return (
     <div className={s.CreateChallengeContainer} style={{ marginBottom: '122px' }}>
       <Header />
@@ -320,9 +345,15 @@ const CreateChallengePage = () => {
         </button>
       </section>
 
-      {/* 생성 완료 모달 */}
-      {createdChallenge && (
-        <ChallengeModal challengeId={createdChallenge.challenge_id} onClose={handleCloseModal} />
+      {/* 모달 렌더링 조건 수
+                 - detailData가 있고 (API 응답 완료)
+                 - is_joined가 false인 (미참여) 경우
+            */}
+      {detailData && !detailData.my_membership.is_joined && (
+        <ChallengeModal
+          challengeData={detailData} // ID 대신 '데이터 객체'를 prop으로 전달
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );

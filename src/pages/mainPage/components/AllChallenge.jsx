@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { challengeListApi } from '@apis/auth/challengeApi';
+import { challengeListApi, challengeDetailApi } from '@apis/auth/challengeApi';
 import useNavigation from '../../../hooks/useNavigation';
 import s from './styles/AllChallenge.module.scss';
 import chevron from '@assets/images/chevron_right_icon.svg';
@@ -7,10 +7,16 @@ import ChallengeModal from '@components/challengeModal/ChallengeModal';
 
 const AllChallenge = () => {
   const { goTo } = useNavigation();
+  // 목록 api 데이터
   const [list, setList] = useState({ items: [] });
-  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
   // const [loading, setLoading] = useState(false);
 
+  // 상세 api 데이터
+  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
+  const [detailData, setDetailData] = useState(null);
+  // const [isDetailLoading, setIsDetailLoading] = useState(false);
+
+  // 목록 api 호출
   useEffect(() => {
     (async () => {
       try {
@@ -26,6 +32,29 @@ const AllChallenge = () => {
       // }
     })();
   }, []);
+
+  // 상세 api 호출
+  useEffect(() => {
+    if (!selectedChallengeId) {
+      setDetailData(null); // ID가 null이면(닫기) 상세 데이터 비우기
+      return;
+    }
+    // ID 선택되면 상세 API 호출
+    (async () => {
+      try {
+        // setIsDetailLoading(true);
+        const data = await challengeDetailApi(selectedChallengeId);
+        setDetailData(data);
+      } catch (err) {
+        console.error('챌린지 상세 조회 실패:', err);
+      } // finally {
+      // setIsDetailLoading(false);
+      // }
+    })();
+  }, [selectedChallengeId]); // selectedChallengeId 바뀔 때마다 실행
+
+  // 모달 닫기
+  const handleCloseModal = () => setSelectedChallengeId(null);
 
   return (
     <section className={s.allChallengeContainer}>
@@ -63,12 +92,21 @@ const AllChallenge = () => {
             </div>
           </article>
         ))}
-        {selectedChallengeId && (
+        {/*  모달 렌더링 조건
+             - detailData가 있고 (API 응답 완료)
+             - is_joined가 false인 (미참여) 경우
+        */}
+        {detailData && !detailData.my_membership.is_joined && (
           <ChallengeModal
-            challengeId={selectedChallengeId}
-            onClose={() => setSelectedChallengeId(null)} // 닫기 버튼
+            challengeData={detailData} // 데이터 객체 prop으로 전달
+            onClose={handleCloseModal}
           />
         )}
+        {/* 참고: 팀원이 구현할 부분 (참여 중)
+          {detailData && detailData.my_membership.is_joined && ( // 조건
+            // 불러올 페이지 및 컴포넌트
+          )}
+        */}
       </div>
     </section>
   );
