@@ -1,32 +1,61 @@
+import { useLocation, useOutletContext } from 'react-router-dom';
 import s from './OngoingPage.module.scss';
 import useNavigation from '../../hooks/useNavigation';
-import { useLocation } from 'react-router-dom';
 import FIRE from '@assets/images/icons/fire_icon.svg';
 import DUPLICATE from '@assets/images/icons/duplicate_icon.svg';
-import BOOK from '@assets/images/book_ex.jpg';
 import NOPHOTO from '@assets/images/no_photo.png';
 import GradientBox from '../../components/GradientBox';
 import IconButton from '../../components/IconButton';
 import TodayPhotoBox from './components/TodayPhotoBox';
 import GradientButton from '../../components/GradientButton';
 import ChallengeBody from '../challengeLayout/ChallengeBody';
-
-const todayPhotos = [
-  { src: BOOK, name: '김한성' },
-  { src: NOPHOTO, name: '김한성' },
-  { src: BOOK, name: '김한성' },
-  { src: NOPHOTO, name: '김한성' },
-  { src: NOPHOTO, name: '김한성' },
-  { src: BOOK, name: '김한성' },
-];
+import { formatDateToDots } from '../../utils/format';
 
 const OngoingPage = () => {
   const { goTo } = useNavigation();
-  const location = useLocation(); // 챌린지 id
+  const location = useLocation();
+
+  const { challengeData } = useOutletContext();
+
   const currentPath = location.pathname;
+  const inviteCode = 'FDFsFE23sRE'; // 임시
 
-  const inviteCode = 'FDFsFE23sRE';
+  // 데이터 파싱
+  const {
+    start_date,
+    end_date,
+    progress_summary,
+    participants,
+    settlement_note,
+    entry_fee,
+    member_count,
+  } = challengeData;
 
+  const successRateText = progress_summary
+    ? `${progress_summary.total_members}명 중 ${progress_summary.success_today}명 성공!`
+    : '로딩 중...';
+
+  const todayDate = progress_summary ? formatDateToDots(progress_summary.date) : '';
+  const challengePeriod = `${formatDateToDots(start_date)} ~ ${formatDateToDots(end_date)}`;
+
+  const todayPhotos =
+    participants?.map((p) => ({
+      src: p.display_thumbnail || NOPHOTO,
+      name: p.name,
+    })) || [];
+
+  // 정산 정보 파싱
+  let totalMoneyText = '총 참가비: N/A';
+  let distributionRuleText = '정산 방법 정보';
+  if (settlement_note) {
+    const parts = settlement_note.split(' / ');
+
+    const calculatedFee = (entry_fee * member_count).toLocaleString('ko-KR');
+    totalMoneyText = `총 참가비: ${calculatedFee}p`;
+    if (parts[1]) distributionRuleText = parts[1].trim();
+  }
+
+  // 복사 핸들러
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(inviteCode);
@@ -41,39 +70,43 @@ const OngoingPage = () => {
     <ChallengeBody>
       <div className={s.todayChallenge}>
         <section className={s.challengeTop}>
-          {/* 성공한 사람 수, 오늘 날짜 */}
-          <GradientBox width="150px" height="38px" text="6명 중 3명 성공!" borderRadius="20000px" />
-          <p>2025.10.06 함께하는 챌린저들은?</p>
+          <GradientBox width="150px" height="38px" text={successRateText} borderRadius="20000px" />
+          <p>{todayDate} 함께하는 챌린저들은?</p>
 
-          {/* 챌린지 기간, 초대 코드 */}
           <div className={s.challengePeriod}>
-            <p>2025.10.01 ~ 2025.10.08</p>
+            <p>{challengePeriod}</p>
             <div className={s.invitedCode}>
               <p>초대코드: {inviteCode}</p>
               <IconButton src={DUPLICATE} alt="복사아이콘" width="16px" onClick={handleCopy} />
             </div>
           </div>
         </section>
+
         <section className={s.todayPhotoGrid}>
-          {todayPhotos.map((item, index) => (
-            <TodayPhotoBox key={index} src={item.src} name={item.name} />
-          ))}
+          {todayPhotos.length > 0 ? (
+            todayPhotos.map((item, index) => (
+              <TodayPhotoBox key={index} src={item.src} name={item.name} />
+            ))
+          ) : (
+            <p style={{ color: '#bbb', textAlign: 'center', marginTop: '20px' }}>
+              아직 참여자가 없습니다.
+            </p>
+          )}
         </section>
+
         <section className={s.challengeButtom}>
-          {/* 인증하기, 도전앨범 버튼 */}
           <div className={s.twoButton}>
             <GradientButton text="인증하기" onClick={() => goTo(`${currentPath}/verify`)} />
             <GradientButton text="도전앨범" onClick={() => goTo(`${currentPath}/photos`)} />
           </div>
 
-          {/* 총 참가비, 정산 방법 */}
           <div className={s.moneyInfo}>
             <div className={s.totalMoney}>
-              <img src={FIRE} width="18px" />
-              <p>총 참가비: 300,000p</p>
-              <img src={FIRE} width="18px" />
+              <img src={FIRE} width="18px" alt="불꽃" />
+              <p>{totalMoneyText}</p>
+              <img src={FIRE} width="18px" alt="불꽃" />
             </div>
-            <p>모인 참가비를 성공자들끼리 N:1 분배해요</p>
+            <p>{distributionRuleText}</p>
           </div>
         </section>
       </div>
