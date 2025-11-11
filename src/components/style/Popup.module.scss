@@ -7,6 +7,7 @@
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #fffffc1a;
   backdrop-filter: blur(3px);
   @include m.flex-column-center;
   z-index: 99999;
