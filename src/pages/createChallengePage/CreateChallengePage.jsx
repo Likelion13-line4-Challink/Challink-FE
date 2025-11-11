@@ -41,7 +41,7 @@ const FREQUENCY_OPTIONS = [
 const CreateChallengePage = () => {
   const { goBack } = useNavigation();
 
-  // --- (A) 챌린지 생성 데이터 state ---
+  // 챌린지 생성 데이터 state
   const [title, setTitle] = useState('');
   const [intro, setIntro] = useState('');
   const [fee, setFee] = useState('');
@@ -51,31 +51,31 @@ const CreateChallengePage = () => {
   const [durationWeeks, setDurationWeeks] = useState('');
   const [frequency, setFrequency] = useState('');
   const [settlementMethod, setSettlementMethod] = useState('');
-  // 이미지
+  // 이미지 업로드
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  // --- (B) 챌린지 모달, api state ---
-  // 생성된 챌린지 ID (상세 API 호출)
+  // 챌린지 모달, api state
+  // 생성된 챌린지 ID
   const [newChallengeId, setNewChallengeId] = useState(null);
 
-  // 상세 API 응답 데이터 (모달)
+  // 상세 API 응답 데이터
   const [detailData, setDetailData] = useState(null);
   // const [isDetailLoading, setIsDetailLoading] = useState(false);
 
-  // --- (C) 핸들러 및 유틸 함수 ---
+  // 핸들러 및 유틸 함수
   // 이미지 핸들러
   const handleFileClick = () => fileInputRef.current?.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (image) URL.revokeObjectURL(image); // 기존 URL revoke
-    setImage(URL.createObjectURL(file)); // 미리보기용
-    setImageFile(file); // 전송용
+    if (image) URL.revokeObjectURL(image);
+    setImage(URL.createObjectURL(file));
+    setImageFile(file);
   };
 
-  // Blob URL 정리 useEffect
+  // URL 정리
   useEffect(() => {
     return () => {
       if (image) {
@@ -99,7 +99,7 @@ const CreateChallengePage = () => {
     new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date); // YYYY-MM-DD
   const addDays = (date, days) => new Date(date.getTime() + days * 86400000);
 
-  // --- (D) 상세 API 호출 useEffect ---
+  // 상세 API 호출
   // newChallengeId 변경 시 상세 API 호출
   useEffect(() => {
     if (!newChallengeId) {
@@ -107,12 +107,13 @@ const CreateChallengePage = () => {
       return;
     }
 
-    // ID가 생겼으므로 상세 API 호출
+    // ID가 생기면 상세 API 호출
     (async () => {
       try {
         // setIsDetailLoading(true);
+
         const data = await challengeDetailApi(newChallengeId);
-        setDetailData(data); // API 응답을 state에 저장
+        setDetailData(data); // API 응답 state에 저장
       } catch (err) {
         console.error('챌린지 상세 조회 실패:', err);
       } // finally {
@@ -121,7 +122,7 @@ const CreateChallengePage = () => {
     })();
   }, [newChallengeId]); // newChallengeId가 바뀔 때마다 실행
 
-  // --- (E) 챌린지 생성 핸들러 ---
+  // 챌린지 생성 핸들러
   const handleCreateClick = async (e) => {
     e.preventDefault();
 
@@ -135,7 +136,7 @@ const CreateChallengePage = () => {
     let freqNDaysToSend = null;
 
     if (frequency.includes('_DAYS_PER_WEEK')) {
-      freqTypeToSend = '주 N일';
+      freqTypeToSend = 'N_DAYS_PER_WEEK';
       freqNDaysToSend = Number(frequency.split('_')[0]);
     } else {
       freqTypeToSend = frequency;
@@ -159,37 +160,31 @@ const CreateChallengePage = () => {
     };
 
     try {
-      let payload;
-      let options = {};
-
-      //  imageFile 존재 여부로 분기
+      const fd = new FormData();
+      Object.entries(basePayload).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) {
+          fd.append(k, String(v));
+        }
+      });
       if (imageFile) {
-        // 이미지가 있을 때: FormData로 전송
-        const fd = new FormData();
-        // basePayload의 모든 키-값 쌍을 FormData에 추가
-        Object.entries(basePayload).forEach(([k, v]) => {
-          if (v !== undefined && v !== null) {
-            fd.append(k, String(v));
-          }
-        });
-        // 이미지 파일 추가
+        // 이미지가 있으면 파일 첨부
         fd.append('cover_image', imageFile);
-        payload = fd;
-        options = { multipart: true };
       } else {
-        //  이미지가 없을 때: JSON으로 전송
-        payload = { ...basePayload, cover_image: '' };
+        // 이미지가 없으면 빈 문자열('')
+        fd.append('cover_image', '');
       }
-
       // createChallengeApi 호출, ID 저장
+      const payload = fd;
+      const options = { multipart: true };
+
       const result = await createChallengeApi(payload, options);
-      setNewChallengeId(result.challenge_id); // ID를 state에 저장 (상세api useEffect trigger)
+      setNewChallengeId(result.challenge_id);
     } catch (err) {
       console.log(err);
     }
   };
 
-  // --- (F) JSX 렌더링 ---
+  // JSX 렌더링
   return (
     <div className={s.CreateChallengeContainer} style={{ marginBottom: '122px' }}>
       <Header />
@@ -207,7 +202,7 @@ const CreateChallengePage = () => {
           )}
         </button>
 
-        {/* 실제 파일 input (숨김 처리) */}
+        {/* 실제 파일 input */}
         <input
           type="file"
           accept="image/*"
@@ -350,15 +345,9 @@ const CreateChallengePage = () => {
         </button>
       </section>
 
-      {/* 모달 렌더링 조건 수
-                 - detailData가 있고 (API 응답 완료)
-                 - is_joined가 false인 (미참여) 경우
-            */}
+      {/* 모달 렌더링 조건 detailData가 있고 (API 응답 완료), is_joined가 false인 (미참여) 경우 */}
       {detailData && !detailData.my_membership.is_joined && (
-        <ChallengeModal
-          challengeData={detailData} // ID 대신 '데이터 객체'를 prop으로 전달
-          onClose={handleCloseModal}
-        />
+        <ChallengeModal challengeData={detailData} onClose={handleCloseModal} />
       )}
     </div>
   );
