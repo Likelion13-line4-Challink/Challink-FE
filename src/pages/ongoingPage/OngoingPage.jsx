@@ -19,7 +19,6 @@ const OngoingPage = () => {
   const { challengeData } = useOutletContext();
 
   const currentPath = location.pathname;
-  const inviteCode = 'FDFsFE23sRE'; // 임시
 
   // 데이터 파싱
   const {
@@ -32,6 +31,8 @@ const OngoingPage = () => {
     invite_codes,
     ai_condition,
   } = challengeData;
+
+  const inviteCode = invite_codes?.[0]?.code;
 
   const successRateText = progress_summary
     ? `${progress_summary.total_members}명 중 ${progress_summary.success_today}명 성공!`
@@ -78,7 +79,7 @@ const OngoingPage = () => {
           <div className={s.challengePeriod}>
             <p>{challengePeriod}</p>
             <div className={s.invitedCode}>
-              <p>초대코드: {invite_codes?.[0]?.code}</p>
+              <p>초대코드: {inviteCode}</p>
               <IconButton src={DUPLICATE} alt="복사아이콘" width="16px" onClick={handleCopy} />
             </div>
           </div>
