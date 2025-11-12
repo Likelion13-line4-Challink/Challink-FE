@@ -19,7 +19,7 @@ const ChallengeCard = ({ item }) => {
       </div>
       <div className={s.contentBox}>
         <h3 className={s.title}>{challenge.title}</h3>
-        <p className={s.desc}>{challenge.subtitle}</p>
+        <p className={s.subtitle}>{challenge.subtitle}</p>
         <ul className={s.metaList}>
           <li>{challenge.duration_weeks}주 동안</li>
           <li>{challenge.freq_type}</li>
