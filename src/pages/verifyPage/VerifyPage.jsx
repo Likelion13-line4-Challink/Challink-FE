@@ -5,13 +5,15 @@ import EDIT from '@assets/images/icons/edit_icon.svg';
 import GradientBox from '../../components/GradientBox';
 import UploadPhoto from './components/UploadPhoto';
 import IconButton from '../../components/IconButton';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const VerifyPage = () => {
   const { id } = useParams();
+  const location = useLocation();
 
+  const ai_condition = location.state?.ai_condition || '기본 조건 텍스트';
   const [isEditing, setIsEditing] = useState(false);
-  const [conditionText, setConditionText] = useState('책 페이지 번호 + 손가락 브이');
+  const [conditionText, setConditionText] = useState(ai_condition);
 
   // 수정 중이면 저장, 아니면 수정 시작
   const handleEditIcon = () => {

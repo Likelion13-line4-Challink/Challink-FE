@@ -28,8 +28,9 @@ const OngoingPage = () => {
     progress_summary,
     participants,
     settlement_note,
-    entry_fee,
-    member_count,
+    total_entry_pot,
+    invite_codes,
+    ai_condition,
   } = challengeData;
 
   const successRateText = progress_summary
@@ -52,8 +53,7 @@ const OngoingPage = () => {
   if (settlement_note) {
     const parts = settlement_note.split(' / ');
 
-    const calculatedFee = (entry_fee * member_count).toLocaleString('ko-KR');
-    totalMoneyText = `총 참가비: ${calculatedFee}p`;
+    totalMoneyText = `총 참가비: ${total_entry_pot.toLocaleString('ko-KR')}p`;
     if (parts[1]) distributionRuleText = parts[1].trim();
   }
 
@@ -78,7 +78,7 @@ const OngoingPage = () => {
           <div className={s.challengePeriod}>
             <p>{challengePeriod}</p>
             <div className={s.invitedCode}>
-              <p>초대코드: {inviteCode}</p>
+              <p>초대코드: {invite_codes?.[0]?.code}</p>
               <IconButton src={DUPLICATE} alt="복사아이콘" width="16px" onClick={handleCopy} />
             </div>
           </div>
@@ -98,7 +98,10 @@ const OngoingPage = () => {
 
         <section className={s.challengeButtom}>
           <div className={s.twoButton}>
-            <GradientButton text="인증하기" onClick={() => goTo(`${currentPath}/verify`)} />
+            <GradientButton
+              text="인증하기"
+              onClick={() => goTo(`${currentPath}/verify`, { state: { ai_condition } })}
+            />
             <GradientButton text="도전앨범" onClick={() => goTo(`${currentPath}/photos`)} />
           </div>
 
