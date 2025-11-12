@@ -40,7 +40,7 @@ const FREQUENCY_OPTIONS = [
 ];
 
 const CreateChallengePage = () => {
-  const { goBack } = useNavigation();
+  const { goBack, goTo } = useNavigation();
 
   // 챌린지 생성 데이터 state
   const [title, setTitle] = useState('');
@@ -225,6 +225,7 @@ const CreateChallengePage = () => {
 
       const result = await createChallengeApi(payload, options);
       setNewChallengeId(result.challenge_id);
+      goTo(`/challenge/${result.challenge_id}`);
     } catch (err) {
       console.log(err);
     }
