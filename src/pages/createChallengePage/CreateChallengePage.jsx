@@ -225,9 +225,10 @@ const CreateChallengePage = () => {
 
       const result = await createChallengeApi(payload, options);
       setNewChallengeId(result.challenge_id);
+      console.log('챌린지 생성 성공', result);
       goTo(`/challenge/${result.challenge_id}`);
     } catch (err) {
-      console.log(err);
+      console.log('챌린지 생성 실패', err);
     }
   };
 

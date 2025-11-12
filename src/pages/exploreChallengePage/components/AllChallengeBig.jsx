@@ -1,5 +1,6 @@
 import React from 'react';
 import s from './styles/AllChallengeBig.module.scss';
+import DefaultPhoto from '@assets/images/no_photo.png';
 
 const AllChallenge = ({ challenges, onCardClick }) => {
   return (
@@ -7,7 +8,11 @@ const AllChallenge = ({ challenges, onCardClick }) => {
       <div className={s.challengeList}>
         {challenges.map((c) => (
           <article key={c.id} className={s.challengeItem} onClick={() => onCardClick?.(c)}>
-            <img src={c.cover_image} className={s.coverImage} alt={c.title} />
+            {c.cover_image == null ? (
+              <img src={DefaultPhoto} alt={c.title} className={s.coverImage} />
+            ) : (
+              <img src={c.cover_image} alt={c.title} className={s.coverImage} />
+            )}{' '}
             <div className={s.contentBox}>
               <h3 className={s.challengeTitle}>{c.title}</h3>
               <p className={s.challengeSubtitle}>{c.subtitle}</p>

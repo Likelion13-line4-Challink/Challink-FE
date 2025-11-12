@@ -7,6 +7,7 @@ import closeIcon from '../../assets/images/icon_close.svg';
 import checkFillIcon from '../../assets/images/check_fill_icon.svg';
 import checkIcon from '../../assets/images/check_icon.svg';
 import GradientButton from '../../components/GradientButton';
+import DefaultPhoto from '@assets/images/no_photo.png';
 
 const ChallengeModal = ({ onClose, challengeData }) => {
   const { goTo } = useNavigation();
@@ -86,7 +87,11 @@ const ChallengeModal = ({ onClose, challengeData }) => {
         </div>
 
         {/* 커버 */}
-        <img src={challengeData.cover_image} className={s.coverImage} alt="" />
+        {challengeData.cover_image == null ? (
+          <img src={DefaultPhoto} alt={challengeData.title} className={s.coverImage} />
+        ) : (
+          <img src={challengeData.cover_image} alt={challengeData.title} className={s.coverImage} />
+        )}
 
         {/* 상세 카드 */}
         <div className={s.challengeInfoCard}>

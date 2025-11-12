@@ -1,6 +1,7 @@
 import React from 'react';
 import s from './styles/ChallengeCard.module.scss';
 import useNavigation from '../../../hooks/useNavigation';
+import DefaultPhoto from '@assets/images/no_photo.png';
 
 const ChallengeCard = ({ item }) => {
   const { goTo } = useNavigation();
@@ -15,7 +16,11 @@ const ChallengeCard = ({ item }) => {
       onClick={() => goTo(`/challenge/${challenge.id}`)}
     >
       <div className={s.coverImageBox}>
-        <img src={challenge.cover_image} alt={challenge.title} className={s.coverImage} />
+        {challenge.cover_image == null ? (
+          <img src={DefaultPhoto} alt={challenge.title} className={s.coverImage} />
+        ) : (
+          <img src={challenge.cover_image} alt={challenge.title} className={s.coverImage} />
+        )}
       </div>
       <div className={s.contentBox}>
         <h3 className={s.title}>{challenge.title}</h3>

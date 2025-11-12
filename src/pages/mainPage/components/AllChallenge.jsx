@@ -4,6 +4,7 @@ import useNavigation from '../../../hooks/useNavigation';
 import s from './styles/AllChallenge.module.scss';
 import chevron from '@assets/images/chevron_right_icon.svg';
 import ChallengeModal from '@components/challengeModal/ChallengeModal';
+import DefaultPhoto from '@assets/images/no_photo.png';
 
 const AllChallenge = () => {
   const { goTo } = useNavigation();
@@ -81,7 +82,11 @@ const AllChallenge = () => {
             className={s.challengeItem}
             onClick={() => setSelectedChallengeId(c.id)}
           >
-            <img src={c.cover_image} className={s.coverImage} />
+            {c.cover_image == null ? (
+              <img src={DefaultPhoto} alt={c.title} className={s.coverImage} />
+            ) : (
+              <img src={c.cover_image} alt={c.title} className={s.coverImage} />
+            )}
             <div className={s.contentBox}>
               <h3 className={s.challengeTitle}>{c.title}</h3>
               <ul className={s.metaList}>
