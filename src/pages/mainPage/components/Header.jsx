@@ -6,11 +6,15 @@ import Popup from '../../../components/Popup';
 import SearchBar from '@components/searchBar/SearchBar.jsx';
 import { challengeListApi, challengeDetailApi } from '@apis/auth/challengeApi'; // ✅ 1. API 2개 임포트
 import useModalStore from '@store/modalStore';
+import useAuthStore from '../../../store/authStore';
 
 const Header = () => {
   const { goTo } = useNavigation();
   const [query, setQuery] = useState('');
   const openModal = useModalStore((state) => state.openModal);
+
+  // 로그인 상태
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   // 팝업 확인 버튼
   const [showPopup, setShowPopup] = useState(false);
@@ -64,9 +68,11 @@ const Header = () => {
     <div className={s.headerContainer}>
       <div className={s.headerTop}>
         <Logo width="62px" height="17px" color="#FCFCFC" />
-        <button className={s.loginButton} onClick={() => goTo('/login')}>
-          로그인
-        </button>
+        {!isLoggedIn && (
+          <button className={s.loginButton} onClick={() => goTo('/login')}>
+            로그인
+          </button>
+        )}
       </div>
 
       <div className={s.headerBottom}>
