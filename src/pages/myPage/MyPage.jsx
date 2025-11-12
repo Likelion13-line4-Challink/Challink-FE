@@ -221,7 +221,9 @@ const MyPage = () => {
         <p className={s.sectionTitle}>완료한 챌린지</p>
         <div className={s.endCards}>
           {completedList.length > 0
-            ? completedList.map((item) => <ChallengeCard key={item.challenge.id} item={item} />)
+            ? completedList.map((item) => (
+                <ChallengeCard key={item.challenge.id} item={item} linkType="my" />
+              ))
             : !listLoading && <p></p>}
         </div>
 

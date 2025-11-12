@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import s from './OngoingPage.module.scss';
 import useNavigation from '../../hooks/useNavigation';
@@ -11,14 +12,45 @@ import GradientButton from '../../components/GradientButton';
 import ChallengeBody from '../challengeLayout/ChallengeBody';
 import { formatDateToDots } from '../../utils/format';
 import { getFullImagePath } from '../../utils/imagePath';
+import { challengeEndApi } from '../../apis/challenge/result';
 
 const OngoingPage = () => {
   const { goTo } = useNavigation();
   const location = useLocation();
-
   const { challengeData } = useOutletContext();
 
   const currentPath = location.pathname;
+
+  // 챌린지 종료 체크
+  useEffect(() => {
+    if (!challengeData) return;
+
+    const today = new Date();
+    const endDate = new Date(challengeData.end_date + 'T00:00:00');
+    //const endDate = new Date('2025-11-11T00:00:00'); // 테스트용
+
+    const endNextDayMidnight = new Date(endDate);
+    endNextDayMidnight.setDate(endDate.getDate() + 1);
+    endNextDayMidnight.setHours(0, 0, 0, 0);
+
+    if (today >= endNextDayMidnight) {
+      challengeEndApi(challengeData.id)
+        .then((res) => {
+          console.log('챌린지 종료 성공:', res);
+          goTo(`${currentPath}/result`); // ResultPage로 이동
+        })
+        .catch((err) => {
+          if (err.response?.data?.error === 'ALREADY_ENDED') {
+            console.log('이미 종료된 챌린지입니다.');
+            goTo(`${currentPath}/result`);
+          } else {
+            console.error('챌린지 종료 실패:', err);
+          }
+        });
+    }
+  }, [challengeData, currentPath, goTo]);
+
+  if (!challengeData) return <p>로딩 중...</p>;
 
   // 데이터 파싱
   const {

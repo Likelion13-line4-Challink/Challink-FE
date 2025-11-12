@@ -2,18 +2,21 @@ import React from 'react';
 import s from './styles/ChallengeCard.module.scss';
 import useNavigation from '../../../hooks/useNavigation';
 
-const ChallengeCard = ({ item }) => {
+const ChallengeCard = ({ item, linkType = 'default' }) => {
   const { goTo } = useNavigation();
 
   const { challenge } = item;
 
+  const handleClick = () => {
+    if (linkType === 'my') {
+      goTo(`/challenge/${challenge.id}/result`);
+    } else {
+      goTo(`/challenge/${challenge.id}`);
+    }
+  };
+
   return (
-    <article
-      key={challenge.id}
-      className={s.challengeCard}
-      // 해당 챌린지의 고유 id로 이동
-      onClick={() => goTo(`/challenge/${challenge.id}`)}
-    >
+    <article key={challenge.id} className={s.challengeCard} onClick={handleClick}>
       <div className={s.coverImageBox}>
         <img src={challenge.cover_image} alt={challenge.title} className={s.coverImage} />
       </div>
