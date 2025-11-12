@@ -21,7 +21,8 @@ const ExploreChallengePage = () => {
 
   //  상세 API 데이터
   const [detailData, setDetailData] = useState(null);
-  // const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q');
 
   // 목록 API 호출
   useEffect(() => {
@@ -66,9 +67,7 @@ const ExploreChallengePage = () => {
         }
       } catch (err) {
         console.error('챌린지 상세 조회 실패:', err);
-      } // finally {
-      setIsDetailLoading(false);
-      // }
+      }
     })();
   }, [selectedChallengeId, goTo]);
 
