@@ -90,11 +90,17 @@ const ChallengeModal = ({ onClose, challengeData }) => {
 
         {/* 상세 카드 */}
         <div className={s.challengeInfoCard}>
-          <h3 className={s.challengeInfo}>
-            {challengeData.entry_fee.toLocaleString()}p 걸고 {challengeData.duration_weeks}주 동안{' '}
-            {challengeData.freq_type} 인증하기!
-          </h3>
-
+          {challengeData.freq_n_days == null ? (
+            <h3 className={s.challengeInfo}>
+              {challengeData.entry_fee.toLocaleString()}p 걸고 {challengeData.duration_weeks}주 동안{' '}
+              {challengeData.freq_type} 인증하기!
+            </h3>
+          ) : (
+            <h3 className={s.challengeInfo}>
+              {challengeData.entry_fee.toLocaleString()}p 걸고 {challengeData.duration_weeks}주 동안
+              주 {challengeData.freq_n_days}일 인증하기!
+            </h3>
+          )}
           <div className={s.meta}>
             <p className={s.description}>{challengeData.subtitle}</p>
             <p className={s.aiCondition}>{challengeData.ai_condition}</p>

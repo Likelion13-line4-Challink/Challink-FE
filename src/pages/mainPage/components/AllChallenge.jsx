@@ -45,6 +45,7 @@ const AllChallenge = () => {
         // setIsDetailLoading(true);
         const data = await challengeDetailApi(selectedChallengeId);
         setDetailData(data);
+        console.log('챌린지 상세 조회 성공', data);
       } catch (err) {
         console.error('챌린지 상세 조회 실패:', err);
       } // finally {
@@ -85,7 +86,7 @@ const AllChallenge = () => {
               <h3 className={s.challengeTitle}>{c.title}</h3>
               <ul className={s.metaList}>
                 <li>{c.duration_weeks}주 동안</li>
-                <li>{c.freq_type}</li>
+                {c.freq_n_days == null ? <li>{c.freq_type}</li> : <li>주 {c.freq_n_days}일</li>}
                 <li>{c.entry_fee.toLocaleString()}p</li>
                 <li>{c.member_count}명</li>
               </ul>

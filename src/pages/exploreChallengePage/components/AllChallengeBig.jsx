@@ -13,7 +13,7 @@ const AllChallenge = ({ challenges, onCardClick }) => {
               <p className={s.challengeSubtitle}>{c.subtitle}</p>
               <ul className={s.metaList}>
                 <li>{c.duration_weeks}주 동안</li>
-                <li>{c.freq_type}</li>
+                {c.freq_n_days == null ? <li>{c.freq_type}</li> : <li>주 {c.freq_n_days}일</li>}
                 <li>{c.entry_fee.toLocaleString()}p</li>
                 <li>{c.member_count}명</li>
               </ul>
