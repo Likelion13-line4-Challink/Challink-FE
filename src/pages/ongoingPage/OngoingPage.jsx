@@ -77,7 +77,7 @@ const OngoingPage = () => {
 
   const todayPhotos =
     participants?.map((p) => ({
-      src: getFullImagePath(p.latest_proof_image, NOPHOTO),
+      src: getFullImagePath(p.has_proof_today ? p.latest_proof_image : null, NOPHOTO),
       name: p.name,
       userId: p.user_id,
     })) || [];
