@@ -9,7 +9,13 @@ const createSubtitle = (data) => {
   if (!data) return '...';
   const fee = data.entry_fee ? data.entry_fee.toLocaleString('ko-KR') : 0;
   const weeks = data.duration_weeks || 0;
-  const freq = data.freq_type || '알 수 없음';
+
+  let freq;
+  if (data.freq_n_days) {
+    freq = `주 ${data.freq_n_days}일`;
+  } else {
+    freq = data.freq_type || '알 수 없음';
+  }
 
   return `${fee}p 걸고 ${weeks}주 동안 ${freq} 인증하기!`;
 };
