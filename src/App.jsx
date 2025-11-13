@@ -32,12 +32,16 @@ const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   { path: '/signup', element: <SignupPage /> },
 
-  // Layout 안 페이지 -> 디자인에 따라 변경될수도
+  // 스플래시 화면으로 리다이렉트
   {
     path: '/',
+    element: <Navigate to="/splash" replace />,
+  },
+
+  // Layout 안 페이지 -> 디자인에 따라 변경될수도
+  {
     element: <Layout />,
     children: [
-      { path: '', element: <Navigate to="splash" replace /> },
       { path: 'main', element: <MainPage /> },
       { path: 'explore', element: <ExploreChallengePage /> },
       { path: 'challenge/create', element: <CreateChallengePage /> },
