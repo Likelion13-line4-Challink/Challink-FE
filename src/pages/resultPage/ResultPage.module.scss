@@ -1,5 +1,5 @@
-@use '../../../../styles/mixins' as m;
-@use '../../../../styles/variables' as *;
+@use '../../styles/mixins' as m;
+@use '../../styles/variables' as *;
 
 .resultChallengeContainer {
   @include m.flex-column-center(center, center, 12px);

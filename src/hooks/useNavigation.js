@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 const useNavigation = () => {
   const navigate = useNavigate();
 
-  const goTo = (path) => {
+  const goTo = (path, options = {}) => {
     if (path.startsWith('http')) {
       window.open(path, '_blank', 'noopener,noreferrer');
     } else {
-      navigate(path);
+      navigate(path, options);
     }
   };
 
