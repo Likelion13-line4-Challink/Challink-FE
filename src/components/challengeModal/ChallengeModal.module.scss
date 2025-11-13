@@ -98,6 +98,7 @@
     .agreeButton {
       @include m.flex-row-center(flex, center, 6px);
       @include m.font-size-weight(14px, 400, 22px);
+      @include m.button-click(1);
       color: $color-white;
       border: none;
       background: none;

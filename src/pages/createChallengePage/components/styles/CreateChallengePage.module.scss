@@ -144,6 +144,7 @@
 
   .cancelButton {
     @include m.font-size-weight(18px, 600, 1.4);
+    @include m.button-click(1);
     width: 100%;
     max-width: min(22.74vw, 100px);
     height: 100%;
@@ -154,6 +155,7 @@
   }
   .createButton {
     @include m.font-size-weight(18px, 600, 1.4);
+    @include m.button-click(1);
     width: 100%;
     height: 100%;
     background-color: $color-white;
