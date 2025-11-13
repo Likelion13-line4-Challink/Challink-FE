@@ -75,6 +75,11 @@ const OngoingPage = () => {
   const todayDate = progress_summary ? formatDateToDots(progress_summary.date) : '';
   const challengePeriod = `${formatDateToDots(start_date)} ~ ${formatDateToDots(end_date)}`;
 
+  // 현재 로그인한 유저의 참여 정보
+  const myParticipationInfo = participants?.find((p) => p.user_id === userId);
+  // 오늘 인증했는지
+  const hasUserVerifiedToday = myParticipationInfo?.has_proof_today || false;
+
   const todayPhotos =
     participants?.map((p) => ({
       src: getFullImagePath(p.has_proof_today ? p.latest_proof_image : null, NOPHOTO),
@@ -134,7 +139,8 @@ const OngoingPage = () => {
         <section className={s.challengeButtom}>
           <div className={s.twoButton}>
             <GradientButton
-              text="인증하기"
+              text={hasUserVerifiedToday ? '인증 완료' : '인증하기'}
+              disabled={hasUserVerifiedToday}
               onClick={() =>
                 goTo(`${currentPath}/verify`, {
                   state: {
