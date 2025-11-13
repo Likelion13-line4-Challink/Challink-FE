@@ -42,6 +42,8 @@ const ChallengeModal = ({ onClose, challengeData }) => {
 
       const result = await joinChallengeApi(challengeData.id, { agree_terms: agreed });
       console.log(result);
+
+      goTo(`/challenge/${challengeData.id}`);
       onClose();
     } catch (err) {
       if (err.response) {
