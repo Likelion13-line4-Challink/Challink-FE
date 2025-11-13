@@ -113,20 +113,27 @@ const ResultPage = () => {
             ))}
           </div>
 
-          {/* 보상받기 버튼 */}
-          {data.status === 'ready' && my.can_claim && (
-            <GradientButton
-              width="196px"
-              text={claiming ? '지급 중...' : '보상받기'}
-              borderRadius="12px"
-              onClick={handleClaim}
-            />
-          )}
-          {data.status === 'paid' && (
-            <p className={s.alreadyClaimed}>
+          {/* 보상받기, 도전앨범 버튼 */}
+          <div className={s.Buttons}>
+            {data.status === 'ready' && data.my.can_claim && (
+              <GradientButton
+                width="196px"
+                text={claiming ? '지급 중...' : '보상받기'}
+                borderRadius="12px"
+                onClick={handleClaim}
+              />
+            )}
+            {(data.status === 'paid' || data.my.can_claim === false) && (
               <GradientButton width="196px" text="정산완료!" borderRadius="12px" disabled={true} />
-            </p>
-          )}
+            )}
+            <GradientButton
+              width="125px"
+              height="48px"
+              text="도전앨범"
+              borderRadius="12px"
+              onClick={() => goTo(`/challenge/${id}/photos`)}
+            />
+          </div>
         </div>
       </ChallengeBody>
     );
