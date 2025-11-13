@@ -69,7 +69,6 @@ const CreateChallengePage = () => {
   const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  // 챌린지 모달, api state
   // 생성된 챌린지 ID
   const [newChallengeId, setNewChallengeId] = useState(null);
 
