@@ -25,7 +25,7 @@ export const challengeListApi = async (params) => {
   return res.data;
 };
 
-// 챌린지 상세 조회 (팝업)
+// 챌린지 상세 조회
 export const challengeDetailApi = async (challengeId) => {
   const res = await defaultInstance.get(`/challenges/${challengeId}/`);
   return res.data;
