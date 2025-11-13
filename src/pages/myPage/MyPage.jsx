@@ -183,6 +183,7 @@ const MyPage = () => {
             borderRadius="8px"
             fontSize="12px"
             isFilled={true}
+            blueShadow={true}
             onClick={handleLogout}
           />
         </div>
@@ -202,6 +203,7 @@ const MyPage = () => {
             borderRadius="8px"
             fontSize="16px"
             isFilled={true}
+            blueShadow={true}
             onClick={handleCharge}
           />
           <GradientButton
@@ -211,6 +213,7 @@ const MyPage = () => {
             borderRadius="8px"
             fontSize="16px"
             isFilled={true}
+            blueShadow={true}
           />
         </div>
       </section>
