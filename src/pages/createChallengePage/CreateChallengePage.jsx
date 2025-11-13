@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createChallengeApi, challengeDetailApi } from '@apis/auth/challengeApi';
+import heic2any from 'heic2any';
 import s from './components/styles/CreateChallengePage.module.scss';
 import Header from './components/Header';
 import DropBox from './components/DropBox';
@@ -39,7 +40,7 @@ const FREQUENCY_OPTIONS = [
 ];
 
 const CreateChallengePage = () => {
-  const { goBack } = useNavigation();
+  const { goBack, goTo } = useNavigation();
 
   // 챌린지 생성 데이터 state
   const [title, setTitle] = useState('');
@@ -64,17 +65,61 @@ const CreateChallengePage = () => {
   const [detailData, setDetailData] = useState(null);
   // const [isDetailLoading, setIsDetailLoading] = useState(false);
 
+  // API 호출 중복 방지
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // 핸들러 및 유틸 함수
   // 이미지 핸들러
   const handleFileClick = () => fileInputRef.current?.click();
-  const handleFileChange = (e) => {
+
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (image) URL.revokeObjectURL(image);
-    setImage(URL.createObjectURL(file));
-    setImageFile(file);
-  };
 
+    // 기존 미리보기 URL 해제
+    if (image) URL.revokeObjectURL(image);
+
+    const fileName = file.name.toLowerCase();
+    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+    // HEIC/HEIF 파일인 경우 변환
+    if (isHeic) {
+      try {
+        console.log('HEIC 파일 감지됨. 변환을 시작합니다...');
+        const conversionResult = await heic2any({
+          blob: file,
+          toType: 'image/jpeg', // JPEG로 변환
+          quality: 0.8, // 품질 설정 (선택 사항)
+        });
+
+        // heic2any는 배열을 반환할 수 있으므로 첫 번째 항목을 사용
+        const convertedBlob = Array.isArray(conversionResult)
+          ? conversionResult[0]
+          : conversionResult;
+
+        // 원본 파일 이름에서 확장자만 .jpeg로 변경
+        const originalName = file.name.split('.').slice(0, -1).join('.');
+        const newFileName = `${originalName}.jpeg`;
+
+        // 변환된 Blob을 File 객체로 다시 만듭니다.
+        const convertedFile = new File([convertedBlob], newFileName, {
+          type: convertedBlob.type,
+          lastModified: Date.now(),
+        });
+
+        setImage(URL.createObjectURL(convertedBlob)); // 미리보기용
+        setImageFile(convertedFile); // 서버 전송용
+        console.log('HEIC 변환 성공.');
+      } catch (err) {
+        console.error('HEIC 변환 실패:', err);
+        setImage(null);
+        setImageFile(null);
+      }
+    } else {
+      // HEIC가 아닌 일반 이미지 파일 처리
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
   // URL 정리
   useEffect(() => {
     return () => {
@@ -129,6 +174,8 @@ const CreateChallengePage = () => {
   const handleCreateClick = async (e) => {
     e.preventDefault();
 
+    if (!isActive || isSubmitting) return;
+
     const entryFeeNum = Number(String(fee).replace(/,/g, '').trim() || 0);
     // const { isNDays, n } = parseWeeklyFreq(frequency);
     const start = new Date();
@@ -163,6 +210,8 @@ const CreateChallengePage = () => {
     };
 
     try {
+      setIsSubmitting(true);
+
       const fd = new FormData();
       Object.entries(basePayload).forEach(([k, v]) => {
         if (v !== undefined && v !== null) {
@@ -182,8 +231,10 @@ const CreateChallengePage = () => {
 
       const result = await createChallengeApi(payload, options);
       setNewChallengeId(result.challenge_id);
+      console.log('챌린지 생성 성공', result);
+      goTo(`/challenge/${result.challenge_id}`);
     } catch (err) {
-      console.log(err);
+      console.log('챌린지 생성 실패', err);
     }
   };
 
@@ -208,7 +259,7 @@ const CreateChallengePage = () => {
         {/* 실제 파일 input */}
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,image/heic,image/heif"
           ref={fileInputRef}
           onChange={handleFileChange}
           style={{ display: 'none' }}
@@ -342,7 +393,7 @@ const CreateChallengePage = () => {
         <button
           className={`${s.createButton} ${isActive ? s.createButtonActive : ''}`}
           onClick={handleCreateClick}
-          disabled={!isActive}
+          disabled={!isActive || isSubmitting}
         >
           챌린지 만들기
         </button>
