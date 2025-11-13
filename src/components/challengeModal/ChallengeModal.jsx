@@ -37,9 +37,9 @@ const ChallengeModal = ({ onClose, challengeData }) => {
     e.preventDefault();
     if (!agreed || isSubmitting) return;
 
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
+    try {
       const result = await joinChallengeApi(challengeData.id, { agree_terms: agreed });
       console.log(result);
 
@@ -71,11 +71,8 @@ const ChallengeModal = ({ onClose, challengeData }) => {
       } else {
         setApiError('인터넷 연결을 확인해주세요.');
       }
-
-      setIsSubmitting(false); // 실패시 버튼 재활성화
-
-      // } finally {
-      //   setLoading(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -147,11 +144,11 @@ const ChallengeModal = ({ onClose, challengeData }) => {
         <GradientButton
           width="255px"
           height="48px"
-          text="도전하기"
+          text={isSubmitting ? '도전 중...' : '도전하기'}
           fontSize="14px"
           isFilled={true}
           onClick={handleSubmit}
-          disabled={!agreed}
+          disabled={!agreed || isSubmitting}
         />
         {/* 팝업 조건부 렌더링 */}
         {showPopup && (

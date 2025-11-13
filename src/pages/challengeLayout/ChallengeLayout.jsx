@@ -3,6 +3,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import s from './ChallengeLayout.module.scss';
 import ChallengeTitle from './components/ChallengeTitle.jsx';
 import { challengeDetailApi } from '../../apis/auth/challengeApi.js';
+import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 
 // 챌린지 상세 데이터의 부제목
 const createSubtitle = (data) => {
@@ -53,7 +54,7 @@ const ChallengeLayout = () => {
   if (loading) {
     return (
       <div className={s.challengePageContainer} style={{ color: '#FFF', textAlign: 'center' }}>
-        불러오는 중...
+        <LoadingSpinner />
       </div>
     );
   }

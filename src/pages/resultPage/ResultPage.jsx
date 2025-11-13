@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { challengeRewardsApi, claimPointApi } from '../../apis/challenge/result';
 import useNavigation from '../../hooks/useNavigation';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const ResultPage = () => {
   const { id } = useParams();
@@ -52,7 +53,7 @@ const ResultPage = () => {
   if (loading)
     return (
       <ChallengeBody>
-        <p>불러오는 중...</p>
+        <LoadingSpinner />
       </ChallengeBody>
     );
   if (error)

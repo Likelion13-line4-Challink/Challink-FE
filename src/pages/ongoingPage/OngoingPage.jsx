@@ -14,6 +14,7 @@ import { formatDateToDots } from '../../utils/format';
 import { getFullImagePath } from '../../utils/imagePath';
 import { challengeEndApi } from '../../apis/challenge/result';
 import useAuthStore from '../../store/authStore';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const OngoingPage = () => {
   const { goTo } = useNavigation();
@@ -107,6 +108,14 @@ const OngoingPage = () => {
       alert('복사에 실패했습니다');
     }
   };
+
+  if (!challengeData) {
+    return (
+      <div className={s.todayChallenge}>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <ChallengeBody>

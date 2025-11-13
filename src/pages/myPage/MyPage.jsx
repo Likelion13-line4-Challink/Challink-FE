@@ -5,6 +5,7 @@ import LOGO from '@assets/images/logo_gradient.png';
 import CHAR from '@assets/images/character.svg';
 import GradientButton from '../../components/GradientButton.jsx';
 import ChallengeCard from '../mainPage/components/ChallengeCard.jsx';
+import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 import Bubble from '../verifyPage/components/Bubble.jsx';
 import PointHistory from './components/PointHistory.jsx';
 import { formatNumberWithCommas } from '../../utils/format.js';
@@ -122,7 +123,11 @@ const MyPage = () => {
   }, [isCharging, setUser]);
 
   if (pageLoading) {
-    return <div className={s.myPageContainer}>로딩 중...</div>;
+    return (
+      <div className={s.myPageContainer}>
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   // 비로그인 UI

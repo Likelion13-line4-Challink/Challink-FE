@@ -1,8 +1,9 @@
 import { BeatLoader } from 'react-spinners';
+import s from './style/LoadingSpinner.module.scss';
 
 const LoadingSpinner = ({ loading = true, color = '#ff3e3d', size = 12 }) => {
   return (
-    <div>
+    <div className={s.loadingContainer}>
       <BeatLoader
         color={color}
         loading={loading}
