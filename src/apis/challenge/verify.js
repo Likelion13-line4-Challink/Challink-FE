@@ -1,4 +1,4 @@
-import { multiInstance } from '../utils/instance';
+import { defaultInstance, multiInstance } from '../utils/instance';
 
 // 챌린지 사진 인증(POST)
 export const verifyChallengePhotoApi = async (challenge_id, imageFile) => {
@@ -7,5 +7,14 @@ export const verifyChallengePhotoApi = async (challenge_id, imageFile) => {
   formData.append('image', imageFile);
 
   const res = await multiInstance.post(`/aiauth/${challenge_id}/`, formData);
+  return res.data;
+};
+
+// 인증 조건 수정(PATCH)
+export const editVerifyRule = async (challenge_id, updatedFields) => {
+  const res = await defaultInstance.patch(
+    `/challenges/${challenge_id}/rules/`,
+    updatedFields, // 수정할 필드
+  );
   return res.data;
 };

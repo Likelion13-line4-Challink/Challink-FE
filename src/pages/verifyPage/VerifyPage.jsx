@@ -6,28 +6,48 @@ import GradientBox from '../../components/GradientBox';
 import UploadPhoto from './components/UploadPhoto';
 import IconButton from '../../components/IconButton';
 import { useLocation, useParams } from 'react-router-dom';
+import { editVerifyRule } from '../../apis/challenge/verify';
+import useAuthStore from '../../store/authStore';
 
 const VerifyPage = () => {
   const { id } = useParams();
   const location = useLocation();
+  const myUserId = useAuthStore((state) => state.userId);
 
-  const ai_condition = location.state?.ai_condition || '기본 조건 텍스트';
+  const {
+    ai_condition = '기본 조건 텍스트',
+    start_date,
+    end_date,
+    owner_id,
+  } = location.state || {};
+
   const [isEditing, setIsEditing] = useState(false);
   const [conditionText, setConditionText] = useState(ai_condition);
-
-  // 수정 중이면 저장, 아니면 수정 시작
-  const handleEditIcon = () => {
-    setIsEditing(!isEditing);
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setConditionText(e.target.value);
   };
 
+  const handleEditIcon = async () => {
+    if (isEditing) {
+      try {
+        setLoading(true);
+        await editVerifyRule(id, { ai_condition_text: conditionText });
+        alert('인증 조건이 수정되었습니다!');
+      } catch (err) {
+        console.error('인증 조건 수정 실패:', err);
+        alert('수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    setIsEditing((prev) => !prev);
+  };
+
   return (
     <ChallengeBody>
       <div className={s.verifyChallenge}>
-        {/* 응원 메세지 */}
         <GradientBox
           width="239px"
           height="60px"
@@ -35,13 +55,12 @@ const VerifyPage = () => {
           borderRadius="8px"
         />
 
-        {/* 챌린지 기간 */}
-        <p className={s.challengePeriod}>2025.10.01 ~ 2025.10.08</p>
+        <p className={s.challengePeriod}>
+          {start_date} ~ {end_date}
+        </p>
 
-        {/* 사진 + 업로드 버튼 */}
         <UploadPhoto challengeId={id} />
 
-        {/* 인증 조건 */}
         <div className={s.verifyCondition}>
           {isEditing ? (
             <input
@@ -50,11 +69,20 @@ const VerifyPage = () => {
               onChange={handleChange}
               className={s.conditionInput}
               autoFocus
+              disabled={loading}
             />
           ) : (
             <p>{conditionText}</p>
           )}
-          <IconButton src={EDIT} alt="편집" width="12px" onClick={handleEditIcon} />
+
+          {owner_id === myUserId && (
+            <IconButton
+              src={EDIT}
+              alt={isEditing ? '저장' : '편집'}
+              width="12px"
+              onClick={handleEditIcon}
+            />
+          )}
         </div>
       </div>
     </ChallengeBody>
