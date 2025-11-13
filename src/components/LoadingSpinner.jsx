@@ -1,6 +1,6 @@
 import { BeatLoader } from 'react-spinners';
 
-const LodingSpinner = ({ loading = true, color = '#ff3e3d', size = 12 }) => {
+const LoadingSpinner = ({ loading = true, color = '#ff3e3d', size = 12 }) => {
   return (
     <div>
       <BeatLoader
@@ -15,4 +15,4 @@ const LodingSpinner = ({ loading = true, color = '#ff3e3d', size = 12 }) => {
   );
 };
 
-export default LodingSpinner;
+export default LoadingSpinner;
