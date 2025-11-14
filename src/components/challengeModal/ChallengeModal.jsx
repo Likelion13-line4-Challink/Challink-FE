@@ -155,7 +155,6 @@ const ChallengeModal = ({ onClose, challengeData }) => {
         {/* 팝업 조건부 렌더링 */}
         {showPopup && (
           <Popup
-            type="success"
             title={errorTitle}
             subtitle={apiError}
             buttonText="확인"

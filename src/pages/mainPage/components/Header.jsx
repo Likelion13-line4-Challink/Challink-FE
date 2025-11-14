@@ -87,9 +87,8 @@ const Header = () => {
       {/* 팝업 조건부 렌더링 */}
       {showPopup && (
         <Popup
-          type="success"
-          title="잘못된 초대코드"
-          subtitle="유효하지 않거나 만료된 초대코드 입니다."
+          title="챌린지 없음"
+          subtitle="존재하지 않는 초대코드입니다."
           buttonText="확인"
           onClick={handlePopupConfirm}
         />
